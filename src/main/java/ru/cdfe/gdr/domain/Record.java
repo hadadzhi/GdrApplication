@@ -1,0 +1,66 @@
+package ru.cdfe.gdr.domain;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.hateoas.Identifiable;
+import org.springframework.hateoas.core.Relation;
+import ru.cdfe.gdr.constants.Relations;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.math.BigInteger;
+import java.util.List;
+
+@Document
+@Data
+@Builder
+@AllArgsConstructor(access = AccessLevel.PACKAGE) // For Builder
+@NoArgsConstructor(access = AccessLevel.PACKAGE) // For Jackson
+@Relation(collectionRelation = Relations.RECORDS)
+public class Record implements Identifiable<String> {
+    /**
+     * Exfor subent number or internal generated id
+     */
+    @Id
+    @JsonIgnore
+    private String id;
+    
+    /**
+     * Enables optimistic concurrency control
+     */
+    @Version
+    @JsonIgnore
+    private BigInteger version;
+    
+    @Valid
+    @NotNull
+    private List<DataPoint> sourceData;
+
+    @NotEmpty
+    @Valid
+    private List<Approximation> approximations;
+
+    @NotEmpty
+    @Valid
+    private List<Reaction> reactions;
+
+    @NotNull
+    @Valid
+    private Quantity integratedCrossSection;
+
+    @NotNull
+    @Valid
+    private Quantity firstMoment;
+
+    @NotNull
+    @Valid
+    private Quantity energyCenter;
+}
