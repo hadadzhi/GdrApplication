@@ -8,9 +8,12 @@ import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.constants.Relations;
 import ru.cdfe.gdr.domain.Record;
@@ -57,5 +60,14 @@ public class RecordController {
         final Record record = Optional.ofNullable(recordRepository.findOne(id))
                 .orElseThrow(NoSuchRecordException::new);
         return new Resource<>(record, entityLinks.linkForSingleResource(record).withSelfRel());
+    }
+    
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable String id) {
+        if (!recordRepository.exists(id)) {
+            throw new NoSuchRecordException();
+        }
+        recordRepository.delete(id);
     }
 }
