@@ -3,10 +3,12 @@ package ru.cdfe.gdr.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotBlank;
 import ru.cdfe.gdr.validation.Finite;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class Quantity {
     public static final String NO_DIM = "NO-DIM";

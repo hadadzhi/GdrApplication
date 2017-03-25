@@ -1,8 +1,6 @@
 package ru.cdfe.gdr.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
@@ -20,8 +18,6 @@ import java.util.List;
 
 @Document
 @Data
-@Builder
-@AllArgsConstructor
 @Relation(collectionRelation = Relations.RECORDS)
 public class Record implements Identifiable<String> {
     /**

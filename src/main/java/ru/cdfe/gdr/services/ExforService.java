@@ -54,12 +54,14 @@ public class ExforService {
         }
         
         private List<Reaction> retrieveReactions() {
-            final RowMapper<Reaction> rowMapper = (rs, row) -> Reaction.builder()
-                    .target(new Nucleus(rs.getInt("tz"), rs.getInt("ta")))
-                    .product(new Nucleus(rs.getInt("pz"), rs.getInt("pa")))
-                    .incident(rs.getString("inc"))
-                    .outgoing(rs.getString("out"))
-                    .build();
+            final RowMapper<Reaction> rowMapper = (rs, row) -> {
+                final Reaction reaction = new Reaction();
+                reaction.setTarget(new Nucleus(rs.getInt("tz"), rs.getInt("ta")));
+                reaction.setProduct(new Nucleus(rs.getInt("pz"), rs.getInt("pa")));
+                reaction.setIncident(rs.getString("inc"));
+                reaction.setOutgoing(rs.getString("out"));
+                return reaction;
+            };
             
             return jdbc.query(QUERY, rowMapper, subEntNumber);
         }

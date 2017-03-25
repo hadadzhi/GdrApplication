@@ -11,10 +11,13 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,17 +77,20 @@ public class RecordController {
     
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).ADMIN)")
     public void delete(@PathVariable String id) {
         if (!recordRepository.exists(id)) {
             log.debug("DELETE: record {} does not exist", id);
             throw new NoSuchRecordException();
         }
+        log.debug("DELETE: {}", id);
         recordRepository.delete(id);
     }
     
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void put(@PathVariable String id, @RequestBody @Validated Record record) {
+    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).ADMIN)")
+    public void put(@PathVariable String id, @RequestBody /*@Validated*/ Record record) {
         final Record existingRecord = recordRepository.findOne(id);
         
         if (existingRecord == null) {
@@ -96,10 +102,19 @@ public class RecordController {
         record.setVersion(existingRecord.getVersion());
         
         try {
+            log.debug("PUT: {}", record);
             recordRepository.save(record);
         } catch (OptimisticLockingFailureException e) {
             log.warn("Optimistic locking failure: {}", e.getMessage());
             throw new OptimisticLockingException(e);
         }
+    }
+    
+    @PostMapping
+    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).ADMIN)")
+    public ResponseEntity post(@RequestBody @Validated Record record) {
+        log.debug("POST: {}", record);
+        record = recordRepository.insert(record);
+        return ResponseEntity.created(entityLinks.linkForSingleResource(record).toUri()).build();
     }
 }
