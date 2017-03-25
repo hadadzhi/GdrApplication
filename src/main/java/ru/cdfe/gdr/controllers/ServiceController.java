@@ -37,7 +37,7 @@ public class ServiceController {
         this.linkService = linkService;
     }
     
-    @GetMapping(Relations.NEW_RECORD)
+    @GetMapping(Relations.EXFOR)
     @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).EXFOR)")
     public Resource<Record>
     newRecord(@RequestParam(name = Parameters.EXFOR_NUMBER) String exforNumber,

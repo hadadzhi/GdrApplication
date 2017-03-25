@@ -45,12 +45,12 @@ public class LinkService {
     }
     
     public Link newRecordLink() {
-        final String uri = linkTo(ServiceController.class).slash(Relations.NEW_RECORD).toUri().toString();
+        final String uri = linkTo(ServiceController.class).slash(Relations.EXFOR).toUri().toString();
         final UriTemplate template = new UriTemplate(uri)
                 .with(Parameters.EXFOR_NUMBER, TemplateVariable.VariableType.REQUEST_PARAM)
                 .with(Parameters.ENERGY_COL, TemplateVariable.VariableType.REQUEST_PARAM)
                 .with(Parameters.CROSS_SECTION_COL, TemplateVariable.VariableType.REQUEST_PARAM)
                 .with(Parameters.CROSS_SECTION_ERR_COL, TemplateVariable.VariableType.REQUEST_PARAM);
-        return new Link(template, Relations.NEW_RECORD);
+        return new Link(template, Relations.EXFOR);
     }
 }
