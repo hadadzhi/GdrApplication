@@ -1,14 +1,13 @@
 package ru.cdfe.gdr.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotBlank;
 import ru.cdfe.gdr.validation.Finite;
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // For Jackson
+@AllArgsConstructor
 public class Quantity {
     public static final String NO_DIM = "NO-DIM";
     
@@ -33,11 +32,5 @@ public class Quantity {
     
     public Quantity(double value, double error) {
         this(value, error, NO_DIM);
-    }
-    
-    public Quantity(double value, double error, String dimension) {
-        this.value = value;
-        this.error = error;
-        this.dimension = dimension;
     }
 }

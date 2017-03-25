@@ -1,11 +1,9 @@
 package ru.cdfe.gdr.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
@@ -23,8 +21,7 @@ import java.util.List;
 @Document
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PROTECTED) // For Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // For Jackson
+@AllArgsConstructor
 @Relation(collectionRelation = Relations.RECORDS)
 public class Record implements Identifiable<String> {
     /**
