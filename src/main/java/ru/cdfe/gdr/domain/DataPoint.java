@@ -8,7 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PACKAGE) // For Jackson
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // For Jackson
 public class DataPoint {
     @NotNull
     @Valid

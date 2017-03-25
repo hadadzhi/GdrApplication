@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PACKAGE) // For Builder
-@NoArgsConstructor(access = AccessLevel.PACKAGE) // For Jackson
+@AllArgsConstructor(access = AccessLevel.PROTECTED) // For Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // For Jackson
 public class Reaction {
     @NotNull
     @Valid

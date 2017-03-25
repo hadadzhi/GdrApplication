@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PACKAGE) // For Jackson
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // For Jackson
 public class Nucleus {
     @JsonProperty(required = true)
     private int charge;

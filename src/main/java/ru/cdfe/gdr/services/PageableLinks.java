@@ -20,7 +20,7 @@ public class PageableLinks {
         this.resolver = resolver;
     }
     
-    public Link pageableLink(LinkBuilder linkBuilder, String rel) {
+    public Link paginatedLink(LinkBuilder linkBuilder, String rel) {
         final URI uri = linkBuilder.toUri();
         final UriTemplate template = new UriTemplate(uri.toString(),
                 resolver.getPaginationTemplateVariables(null, UriComponentsBuilder.fromUri(uri).build()));

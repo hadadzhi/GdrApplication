@@ -14,4 +14,5 @@ public final class Relations {
     
     public static final String RECORD = "record";
     public static final String RECORDS = "records";
+    public static final String RECORDS_COMPACT = "recordExcerpts";
 }

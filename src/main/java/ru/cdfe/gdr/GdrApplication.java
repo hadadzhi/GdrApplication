@@ -160,6 +160,7 @@ public class GdrApplication {
                                 .reactions(Arrays.asList(reaction1, reaction2))
                                 .sourceData(source)
                                 .approximations(approximations)
+                                .exforNumber(UUID.randomUUID().toString().toUpperCase().replace("-","").substring(0, 8))
                                 .build();
                         
                         repo.insert(record);

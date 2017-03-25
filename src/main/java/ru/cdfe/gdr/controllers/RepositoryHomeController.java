@@ -11,7 +11,6 @@ import ru.cdfe.gdr.domain.Record;
 import ru.cdfe.gdr.services.PageableLinks;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping(Relations.REPOSITORY)
@@ -28,8 +27,8 @@ public class RepositoryHomeController {
     @GetMapping
     public ResourceSupport repositoryHome() {
         final ResourceSupport links = new ResourceSupport();
-        links.add(linkTo(methodOn(RepositoryHomeController.class).repositoryHome()).withSelfRel());
-        links.add(pageableLinks.pageableLink(entityLinks.linkFor(Record.class), Relations.RECORDS));
+        links.add(linkTo(RepositoryHomeController.class).withSelfRel());
+        links.add(pageableLinks.paginatedLink(entityLinks.linkFor(Record.class), Relations.RECORDS));
         return links;
     }
 }

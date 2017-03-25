@@ -1,4 +1,4 @@
-package ru.cdfe.gdr.dto;
+package ru.cdfe.gdr.domain.security.dto;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;

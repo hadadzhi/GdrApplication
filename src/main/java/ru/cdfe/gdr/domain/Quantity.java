@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import ru.cdfe.gdr.validation.Finite;
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PACKAGE) // For Jackson
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // For Jackson
 public class Quantity {
     public static final String NO_DIM = "NO-DIM";
     

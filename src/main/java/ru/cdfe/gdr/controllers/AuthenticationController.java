@@ -2,7 +2,7 @@ package ru.cdfe.gdr.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,13 +12,14 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.cdfe.gdr.dto.AuthenticationRequest;
-import ru.cdfe.gdr.dto.AuthenticationResponse;
 import ru.cdfe.gdr.constants.Constants;
+import ru.cdfe.gdr.constants.Relations;
 import ru.cdfe.gdr.domain.security.User;
+import ru.cdfe.gdr.domain.security.dto.AuthenticationRequest;
+import ru.cdfe.gdr.domain.security.dto.AuthenticationResponse;
 import ru.cdfe.gdr.exceptions.security.BadCredentialsException;
-import ru.cdfe.gdr.exceptions.security.SecurityException;
 import ru.cdfe.gdr.repositories.UserRepository;
 import ru.cdfe.gdr.security.AuthenticationInfo;
 import ru.cdfe.gdr.security.AuthenticationInfoRepository;
@@ -48,7 +49,7 @@ public class AuthenticationController {
         this.userRepository = userRepository;
     }
     
-    @PostMapping("login")
+    @PostMapping(Relations.LOGIN)
     public AuthenticationResponse login(@RequestBody @Validated AuthenticationRequest authRequest,
                                         HttpServletRequest httpRequest) {
         
@@ -63,20 +64,23 @@ public class AuthenticationController {
             auth.setDetails(new WebAuthenticationDetails(httpRequest));
             
             authenticationInfoRepository.put(token, new AuthenticationInfo(auth, expiry));
+            log.info("Login success: {}", authRequest.getName());
             return new AuthenticationResponse(token);
         }
         
+        log.warn("Login failure: {}", authRequest.getName());
         throw new BadCredentialsException();
     }
     
     @PreAuthorize("isFullyAuthenticated()")
-    @PostMapping("logout")
-    public ResponseEntity logout(Authentication auth) {
+    @PostMapping(Relations.LOGOUT)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(Authentication auth) {
         if (authenticationInfoRepository.remove(String.class.cast(auth.getCredentials())) == null) {
             log.error("logout() was called, but there is no authentication for the given token");
-            throw new SecurityException();
+            throw new BadCredentialsException();
         }
-        return ResponseEntity.noContent().build();
+        log.info("Logout success: {}", auth.getName());
     }
     
     private String generateToken() {

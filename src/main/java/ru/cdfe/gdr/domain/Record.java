@@ -16,18 +16,19 @@ import ru.cdfe.gdr.constants.Relations;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.math.BigInteger;
 import java.util.List;
 
 @Document
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PACKAGE) // For Builder
-@NoArgsConstructor(access = AccessLevel.PACKAGE) // For Jackson
+@AllArgsConstructor(access = AccessLevel.PROTECTED) // For Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // For Jackson
 @Relation(collectionRelation = Relations.RECORDS)
 public class Record implements Identifiable<String> {
     /**
-     * Exfor subent number or internal generated id
+     * Internal generated id
      */
     @Id
     @JsonIgnore
@@ -40,26 +41,30 @@ public class Record implements Identifiable<String> {
     @JsonIgnore
     private BigInteger version;
     
+    @NotEmpty
+    @Pattern(regexp = "[A-Z0-9]{8}")
+    private String exforNumber;
+    
     @Valid
     @NotNull
     private List<DataPoint> sourceData;
-
+    
     @NotEmpty
     @Valid
     private List<Approximation> approximations;
-
+    
     @NotEmpty
     @Valid
     private List<Reaction> reactions;
-
+    
     @NotNull
     @Valid
     private Quantity integratedCrossSection;
-
+    
     @NotNull
     @Valid
     private Quantity firstMoment;
-
+    
     @NotNull
     @Valid
     private Quantity energyCenter;

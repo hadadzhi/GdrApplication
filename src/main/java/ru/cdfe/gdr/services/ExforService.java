@@ -19,11 +19,11 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @Service
-public class ExforDataFetcher {
+public class ExforService {
     private final JdbcTemplate jdbc;
     
     @Autowired
-    public ExforDataFetcher(JdbcTemplate jdbc) {
+    public ExforService(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
     
