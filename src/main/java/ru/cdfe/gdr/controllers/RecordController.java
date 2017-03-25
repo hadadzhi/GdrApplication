@@ -29,7 +29,7 @@ import ru.cdfe.gdr.domain.dto.RecordExcerpt;
 import ru.cdfe.gdr.exceptions.NoSuchRecordException;
 import ru.cdfe.gdr.exceptions.OptimisticLockingException;
 import ru.cdfe.gdr.repositories.RecordRepository;
-import ru.cdfe.gdr.services.PageableLinks;
+import ru.cdfe.gdr.services.LinkService;
 
 import java.util.Optional;
 
@@ -40,16 +40,16 @@ import java.util.Optional;
 public class RecordController {
     private final RecordRepository recordRepository;
     private final EntityLinks entityLinks;
-    private final PageableLinks pageableLinks;
+    private final LinkService linkService;
     
     @Autowired
     public RecordController(RecordRepository recordRepository,
                             EntityLinks entityLinks,
-                            PageableLinks pageableLinks) {
+                            LinkService linkService) {
         
         this.recordRepository = recordRepository;
         this.entityLinks = entityLinks;
-        this.pageableLinks = pageableLinks;
+        this.linkService = linkService;
     }
     
     @GetMapping
@@ -63,7 +63,7 @@ public class RecordController {
         
         // #1 Set a proper self link
         resources.getLinks().remove(resources.getLink(Link.REL_SELF));
-        resources.getLinks().add(pageableLinks.pageLink(entityLinks.linkFor(Record.class), pageable, Link.REL_SELF));
+        resources.getLinks().add(linkService.pageLink(entityLinks.linkFor(Record.class), pageable, Link.REL_SELF));
         
         return resources;
     }
@@ -77,7 +77,7 @@ public class RecordController {
     
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).ADMIN)")
+    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).REPOSITORY)")
     public void delete(@PathVariable String id) {
         if (!recordRepository.exists(id)) {
             log.debug("DELETE: record {} does not exist", id);
@@ -89,7 +89,7 @@ public class RecordController {
     
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).ADMIN)")
+    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).REPOSITORY)")
     public void put(@PathVariable String id, @RequestBody /*@Validated*/ Record record) {
         final Record existingRecord = recordRepository.findOne(id);
         
@@ -111,7 +111,7 @@ public class RecordController {
     }
     
     @PostMapping
-    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).ADMIN)")
+    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).REPOSITORY)")
     public ResponseEntity post(@RequestBody @Validated Record record) {
         log.debug("POST: {}", record);
         record = recordRepository.insert(record);

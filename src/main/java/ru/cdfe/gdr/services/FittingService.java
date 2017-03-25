@@ -24,7 +24,7 @@ public final class FittingService {
      * The parameters of the curves in the given approximation are used as the initial guess.
      * After a successful call to this method, the given approximation will contain the
      * fitted parameters of the curves as well as the minimized chi squared value.
-     * If an exception was thrown by the call to this method, the given approximation is unchanged.
+     * If an exception is thrown from this method, the given approximation is unchanged.
      *
      * @param approximation an {@link Approximation} instance containing the source data and the curves to be fitted
      *                      with initial guesses as their parameters
@@ -45,12 +45,18 @@ public final class FittingService {
         }
         
         final ChiSquaredFCN fcn = new ChiSquaredFCN(approximation.getCurves(), approximation.getSourceData());
-        final FunctionMinimum min = new MnMigrad(fcn, mnUserParameters).minimize();
+        final FunctionMinimum min;
         
-        log.info("FunctionMinimum: " + min.toString());
+        try {
+            min = new MnMigrad(fcn, mnUserParameters).minimize();
+        } catch (Exception e) {
+            throw new FittingException(e);
+        }
+        
+        log.debug("FunctionMinimum: " + min.toString());
         
         if (!min.isValid()) {
-            throw new FittingException("Minimization did not converge");
+            throw new FittingException("Function minimum is not valid");
         }
         
         approximation.setChiSquared(min.fval());

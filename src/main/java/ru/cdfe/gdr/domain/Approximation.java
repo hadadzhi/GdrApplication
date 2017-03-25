@@ -6,7 +6,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 import ru.cdfe.gdr.validation.Finite;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -20,7 +19,7 @@ public class Approximation {
     @Finite
     private double chiSquaredReduced;
     
-    @NotNull
+    @NotEmpty
     @Valid
     private List<DataPoint> sourceData;
 

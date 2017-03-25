@@ -37,8 +37,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.toSet;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class GdrApplication {
@@ -71,12 +73,12 @@ public class GdrApplication {
             try {
                 SecurityContextHolder.getContext().setAuthentication(
                         new UsernamePasswordAuthenticationToken("admin", "admin",
-                                singleton(new SimpleGrantedAuthority(Authorities.ADMIN))));
+                                singleton(new SimpleGrantedAuthority(Authorities.REPOSITORY))));
                 
                 userRepository.deleteAll();
                 userRepository.insert(new User("admin",
                         passwordEncoder.encode("admin"),
-                        singleton(Authorities.ADMIN)));
+                        Stream.of(Authorities.EXFOR, Authorities.FITTING, Authorities.REPOSITORY).collect(toSet())));
             } finally {
                 SecurityContextHolder.getContext().setAuthentication(null);
             }
@@ -90,14 +92,14 @@ public class GdrApplication {
             try {
                 SecurityContextHolder.getContext().setAuthentication(
                         new UsernamePasswordAuthenticationToken("admin", "admin",
-                                singleton(new SimpleGrantedAuthority(Authorities.ADMIN))));
+                                singleton(new SimpleGrantedAuthority(Authorities.REPOSITORY))));
                 
                 repo.deleteAll();
                 IntStream.range(0, 1000).parallel().forEach(value -> {
                     try {
                         SecurityContextHolder.getContext().setAuthentication(
                                 new UsernamePasswordAuthenticationToken("admin", "admin",
-                                        singleton(new SimpleGrantedAuthority(Authorities.ADMIN))));
+                                        singleton(new SimpleGrantedAuthority(Authorities.REPOSITORY))));
                         
                         final Random rnd = new Random();
                         final List<DataPoint> source = new ArrayList<>();

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.constants.Relations;
 import ru.cdfe.gdr.domain.Record;
-import ru.cdfe.gdr.services.PageableLinks;
+import ru.cdfe.gdr.services.LinkService;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -16,19 +16,19 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RequestMapping(Relations.REPOSITORY)
 public class RepositoryHomeController {
     private final EntityLinks entityLinks;
-    private final PageableLinks pageableLinks;
+    private final LinkService linkService;
     
     @Autowired
-    public RepositoryHomeController(EntityLinks entityLinks, PageableLinks pageableLinks) {
+    public RepositoryHomeController(EntityLinks entityLinks, LinkService linkService) {
         this.entityLinks = entityLinks;
-        this.pageableLinks = pageableLinks;
+        this.linkService = linkService;
     }
     
     @GetMapping
     public ResourceSupport repositoryHome() {
         final ResourceSupport links = new ResourceSupport();
         links.add(linkTo(RepositoryHomeController.class).withSelfRel());
-        links.add(pageableLinks.paginatedLink(entityLinks.linkFor(Record.class), Relations.RECORDS));
+        links.add(linkService.paginatedLink(entityLinks.linkFor(Record.class), Relations.RECORDS));
         return links;
     }
 }
