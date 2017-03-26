@@ -66,20 +66,26 @@ public class AuthenticationController {
         final User user = userRepository.findByName(authRequest.getName());
         
         if (user != null && passwordEncoder.matches(authRequest.getSecret(), user.getSecret())) {
-            final Instant expiry = Instant.now().plus(Constants.AUTH_SESSION_LENGTH);
-            final String token = generateToken();
-            
-            final UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());
-            auth.setDetails(new WebAuthenticationDetails(httpRequest));
-            
-            authenticationInfoRepository.put(token, new AuthenticationInfo(auth, expiry));
-            log.info("Login success: {}", user);
-            return new AuthenticationResponse(token);
+            return loginInternal(user, httpRequest);
         }
         
         log.warn("Login failure: {}", authRequest.getName());
         throw new BadCredentialsException();
+    }
+    
+    private AuthenticationResponse loginInternal(User user, HttpServletRequest httpRequest) {
+        final Instant expiry = Instant.now().plus(Constants.AUTH_SESSION_LENGTH);
+        final String token = generateToken();
+        
+        final UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());
+        
+        auth.setDetails(new WebAuthenticationDetails(httpRequest));
+        
+        authenticationInfoRepository.put(token, new AuthenticationInfo(auth, expiry));
+        
+        log.info("Login success: {}", user);
+        return new AuthenticationResponse(token);
     }
     
     @PostMapping(Relations.LOGOUT)
@@ -132,7 +138,7 @@ public class AuthenticationController {
         }
         
         logout(auth);
-        return login(new AuthenticationRequest(editedUser.getName(), secret), request);
+        return loginInternal(user, request);
     }
     
     private String generateToken() {
