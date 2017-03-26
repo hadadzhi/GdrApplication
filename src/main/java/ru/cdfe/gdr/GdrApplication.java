@@ -8,6 +8,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.hateoas.UriTemplate;
@@ -40,8 +41,11 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toSet;
 
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @Slf4j
+@SpringBootApplication(exclude = {
+        SecurityAutoConfiguration.class,
+        WebMvcAutoConfiguration.class
+})
 public class GdrApplication {
     public static void main(String[] args) {
         SpringApplication.run(GdrApplication.class, args);
