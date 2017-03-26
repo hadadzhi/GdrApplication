@@ -118,12 +118,10 @@ public class AuthenticationController {
         editedUser.setId(user.getId());
         editedUser.setVersion(user.getVersion());
     
-        String secret = editedUser.getSecret();
-        if (secret != null) {
-            editedUser.setSecret(passwordEncoder.encode(secret));
+        if (editedUser.getSecret() != null) {
+            editedUser.setSecret(passwordEncoder.encode(editedUser.getSecret()));
         } else {
             editedUser.setSecret(user.getSecret());
-            secret = user.getSecret();
         }
         
         try {
