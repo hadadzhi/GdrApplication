@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,10 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @ExposesResourceFor(User.class)
-@RequestMapping(Relations.REPOSITORY + "/" + Relations.USERS)
+@RequestMapping(
+        value = Relations.REPOSITORY + "/" + Relations.USERS,
+        produces = MediaTypes.HAL_JSON_VALUE
+)
 @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).USERS)")
 public class UserController {
     private final UserRepository userRepository;
@@ -63,7 +67,7 @@ public class UserController {
         final PagedResources<Resource<User>> users = assembler.toResource(
                 userRepository.findAll(pageable),
                 user -> new Resource<>(user, entityLinks.linkForSingleResource(user).withSelfRel()));
-        linkService.fixSelfLink(users, pageable, User.class);
+        linkService.fixSelfLink(users, pageable, entityLinks.linkFor(User.class));
         return users;
     }
     
@@ -84,7 +88,7 @@ public class UserController {
         userRepository.delete(id);
     }
     
-    @PutMapping("{id}")
+    @PutMapping(value = "{id}", consumes = MediaTypes.HAL_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void put(@PathVariable String id, @RequestBody @Validated User user) {
         final User existingUser = userRepository.findOne(id);
@@ -115,7 +119,7 @@ public class UserController {
         }
     }
     
-    @PostMapping
+    @PostMapping(consumes = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity post(@RequestBody @Validated User user) {
         if (user.getSecret() == null) {
             log.debug("POST: password not specified: {}", user);

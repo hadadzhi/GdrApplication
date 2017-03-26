@@ -7,7 +7,6 @@ import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkBuilder;
 import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.TemplateVariable;
 import org.springframework.hateoas.UriTemplate;
 import org.springframework.stereotype.Service;
@@ -59,8 +58,8 @@ public class LinkService {
         return new Link(template, Relations.EXFOR);
     }
     
-    public <T> void fixSelfLink(PagedResources<Resource<T>> pagedResources, Pageable page, Class<T> entityType) {
+    public void fixSelfLink(PagedResources<?> pagedResources, Pageable page, LinkBuilder selfLinkBuilder) {
         pagedResources.getLinks().remove(pagedResources.getLink(Link.REL_SELF));
-        pagedResources.getLinks().add(pageLink(entityLinks.linkFor(entityType), page, Link.REL_SELF));
+        pagedResources.getLinks().add(pageLink(selfLinkBuilder, page, Link.REL_SELF));
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,10 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @ExposesResourceFor(Record.class)
-@RequestMapping(Relations.RECORDS + "/" + Relations.RECORDS)
+@RequestMapping(
+        value = Relations.REPOSITORY + "/" + Relations.RECORDS,
+        produces = MediaTypes.HAL_JSON_VALUE
+)
 @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).RECORDS)")
 public class RecordController {
     private final RecordRepository recordRepository;
@@ -63,7 +67,7 @@ public class RecordController {
                 record -> new Resource<>(new RecordExcerpt(record),
                         entityLinks.linkForSingleResource(record).withRel(Relations.RECORD)));
         
-        linkService.fixSelfLink(resources, pageable, RecordExcerpt.class);
+        linkService.fixSelfLink(resources, pageable, entityLinks.linkFor(Record.class));
         return resources;
     }
     
@@ -87,7 +91,7 @@ public class RecordController {
         recordRepository.delete(id);
     }
     
-    @PutMapping("{id}")
+    @PutMapping(value = "{id}", consumes = MediaTypes.HAL_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void put(@PathVariable String id, @RequestBody @Validated Record record) {
         final Record existingRecord = recordRepository.findOne(id);
@@ -109,7 +113,7 @@ public class RecordController {
         }
     }
     
-    @PostMapping
+    @PostMapping(consumes = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity post(@RequestBody @Validated Record record) {
         log.debug("POST: inserting record: {}", record);
         record = recordRepository.insert(record);

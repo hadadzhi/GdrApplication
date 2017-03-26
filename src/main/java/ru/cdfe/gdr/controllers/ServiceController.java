@@ -2,12 +2,14 @@ package ru.cdfe.gdr.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.GdrParameters;
@@ -23,8 +25,9 @@ import ru.cdfe.gdr.services.LinkService;
 
 import java.util.List;
 
-@RestController
 @Slf4j
+@RestController
+@RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
 public class ServiceController {
     private final ExforService exforService;
     private final FittingService fittingService;
@@ -61,7 +64,7 @@ public class ServiceController {
         return new Resource<>(recordTemplate, linkService.fitterLink());
     }
     
-    @PostMapping(Relations.FITTER)
+    @PostMapping(value = Relations.FITTER, consumes = MediaTypes.HAL_JSON_VALUE)
     @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).FITTING)")
     public Resource<Approximation> fit(@RequestBody @Validated Approximation initGuess) {
         fittingService.fit(initGuess);

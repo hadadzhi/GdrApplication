@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,7 +44,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @Slf4j
 @RestController
-@RequestMapping
+@RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
 public class AuthenticationController {
     private final AuthenticationInfoRepository authenticationInfoRepository;
     private final PasswordEncoder passwordEncoder;
@@ -59,7 +61,11 @@ public class AuthenticationController {
         this.userRepository = userRepository;
     }
     
-    @PostMapping(Relations.LOGIN)
+    @PostMapping(
+            value = Relations.LOGIN,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public AuthenticationResponse login(@RequestBody @Validated AuthenticationRequest authRequest,
                                         HttpServletRequest httpRequest) {
         
@@ -103,7 +109,7 @@ public class AuthenticationController {
                 .slash(Relations.CURRENT_USER).withSelfRel());
     }
     
-    @PutMapping(Relations.CURRENT_USER)
+    @PutMapping(value = Relations.CURRENT_USER, consumes = MediaTypes.HAL_JSON_VALUE)
     @PreAuthorize("isFullyAuthenticated()")
     public AuthenticationResponse editCurrentUser(@AuthenticationPrincipal User user,
                                                   @RequestBody @Validated User editedUser,
