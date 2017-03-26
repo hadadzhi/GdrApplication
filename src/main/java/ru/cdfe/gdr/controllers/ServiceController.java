@@ -41,7 +41,7 @@ public class ServiceController {
     }
     
     @GetMapping(Relations.EXFOR)
-    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).EXFOR)")
+    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).EXFOR)")
     public Resource<Record>
     exfor(@RequestParam(name = Parameters.EXFOR_NUMBER) String exforNumber,
           @RequestParam(name = Parameters.ENERGY_COL, defaultValue = "0") int enCol,
@@ -65,7 +65,7 @@ public class ServiceController {
     }
     
     @PostMapping(value = Relations.FITTER, consumes = MediaTypes.HAL_JSON_VALUE)
-    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).FITTING)")
+    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).FITTING)")
     public Resource<Approximation> fit(@RequestBody @Validated Approximation initGuess) {
         fittingService.fit(initGuess);
         return new Resource<>(initGuess);
