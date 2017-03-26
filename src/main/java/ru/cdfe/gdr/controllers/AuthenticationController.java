@@ -2,23 +2,32 @@ package ru.cdfe.gdr.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.constants.Constants;
 import ru.cdfe.gdr.constants.Relations;
+import ru.cdfe.gdr.domain.security.Authority;
 import ru.cdfe.gdr.domain.security.User;
 import ru.cdfe.gdr.domain.security.dto.AuthenticationRequest;
 import ru.cdfe.gdr.domain.security.dto.AuthenticationResponse;
+import ru.cdfe.gdr.exceptions.ConflictException;
 import ru.cdfe.gdr.exceptions.security.BadCredentialsException;
 import ru.cdfe.gdr.repositories.UserRepository;
 import ru.cdfe.gdr.security.AuthenticationInfo;
@@ -29,10 +38,11 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
 
-import static java.util.stream.Collectors.toSet;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
-@RestController
 @Slf4j
+@RestController
+@RequestMapping
 public class AuthenticationController {
     private final AuthenticationInfoRepository authenticationInfoRepository;
     private final PasswordEncoder passwordEncoder;
@@ -53,18 +63,18 @@ public class AuthenticationController {
     public AuthenticationResponse login(@RequestBody @Validated AuthenticationRequest authRequest,
                                         HttpServletRequest httpRequest) {
         
-        final User user = userRepository.findOne(authRequest.getName());
+        final User user = userRepository.findByName(authRequest.getName());
         
         if (user != null && passwordEncoder.matches(authRequest.getSecret(), user.getSecret())) {
             final Instant expiry = Instant.now().plus(Constants.AUTH_SESSION_LENGTH);
             final String token = generateToken();
             
-            final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, token,
-                    user.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(toSet()));
+            final UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());
             auth.setDetails(new WebAuthenticationDetails(httpRequest));
             
             authenticationInfoRepository.put(token, new AuthenticationInfo(auth, expiry));
-            log.info("Login success: {}", authRequest.getName());
+            log.info("Login success: {}", user);
             return new AuthenticationResponse(token);
         }
         
@@ -72,20 +82,62 @@ public class AuthenticationController {
         throw new BadCredentialsException();
     }
     
-    @PreAuthorize("isFullyAuthenticated()")
     @PostMapping(Relations.LOGOUT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("isFullyAuthenticated()")
     public void logout(Authentication auth) {
-        if (authenticationInfoRepository.remove(String.class.cast(auth.getCredentials())) == null) {
-            log.error("logout() was called, but there is no authentication for the given token");
-            throw new BadCredentialsException();
+        authenticationInfoRepository.remove(String.class.cast(auth.getCredentials()));
+        log.info("Logout success: {}", auth.getPrincipal());
+    }
+    
+    @GetMapping(Relations.CURRENT_USER)
+    @PreAuthorize("isFullyAuthenticated()")
+    public Resource<User> currentUser(@AuthenticationPrincipal User user) {
+        return new Resource<>(user, linkTo(AuthenticationController.class)
+                .slash(Relations.CURRENT_USER).withSelfRel());
+    }
+    
+    @PutMapping(Relations.CURRENT_USER)
+    @PreAuthorize("isFullyAuthenticated()")
+    public AuthenticationResponse editCurrentUser(@AuthenticationPrincipal User user,
+                                                  @RequestBody @Validated User editedUser,
+                                                  HttpServletRequest request,
+                                                  Authentication auth) {
+        
+        if (!editedUser.getAuthorities().equals(user.getAuthorities()) &&
+                !user.getAuthorities().contains(Authority.USERS)) {
+            throw new AccessDeniedException("Not authorized to change authorities");
         }
-        log.info("Logout success: {}", auth.getName());
+        
+        editedUser.setId(user.getId());
+        editedUser.setVersion(user.getVersion());
+        
+        final String newSecret = editedUser.getSecret();
+        if (newSecret != null) {
+            editedUser.setSecret(passwordEncoder.encode(newSecret));
+        } else {
+            editedUser.setSecret(user.getSecret());
+        }
+        
+        try {
+            log.debug("Saving edited user: {}", editedUser);
+            userRepository.save(editedUser);
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Failed to save edited user: {}", e.getMessage());
+            throw new ConflictException("User name already exists", e);
+        } catch (OptimisticLockingFailureException e) {
+            log.warn("Failed to save edited user: {}", e.getMessage());
+            throw new ConflictException("Concurrent modification", e);
+        }
+        
+        logout(auth);
+        return login(new AuthenticationRequest(editedUser.getName(), newSecret), request);
     }
     
     private String generateToken() {
         final byte[] bytes = new byte[Constants.AUTH_TOKEN_LENGTH_BYTES];
         secureRandom.nextBytes(bytes);
-        return Base64.getEncoder().encodeToString(bytes);
+        final String token = Base64.getEncoder().encodeToString(bytes).replace("=", "");
+        return authenticationInfoRepository.get(token) != null ? generateToken() : token;
     }
 }

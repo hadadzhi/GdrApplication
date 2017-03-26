@@ -40,10 +40,10 @@ public class ServiceController {
     @GetMapping(Relations.EXFOR)
     @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).EXFOR)")
     public Resource<Record>
-    newRecord(@RequestParam(name = Parameters.EXFOR_NUMBER) String exforNumber,
-              @RequestParam(name = Parameters.ENERGY_COL, defaultValue = "0") int enCol,
-              @RequestParam(name = Parameters.CROSS_SECTION_COL, defaultValue = "1") int csCol,
-              @RequestParam(name = Parameters.CROSS_SECTION_ERR_COL, defaultValue = "2") int csErrCol) {
+    exfor(@RequestParam(name = Parameters.EXFOR_NUMBER) String exforNumber,
+          @RequestParam(name = Parameters.ENERGY_COL, defaultValue = "0") int enCol,
+          @RequestParam(name = Parameters.CROSS_SECTION_COL, defaultValue = "1") int csCol,
+          @RequestParam(name = Parameters.CROSS_SECTION_ERR_COL, defaultValue = "2") int csErrCol) {
         
         final List<DataPoint> exforData = exforService.getData(exforNumber, enCol, csCol, csErrCol);
         final List<Reaction> exforReactions = exforService.getReactions(exforNumber);

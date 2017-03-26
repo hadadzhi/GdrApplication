@@ -1,10 +1,6 @@
 package ru.cdfe.gdr.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class NoExforDataException extends RuntimeException {
+public class NoExforDataException extends BadRequestException {
     public NoExforDataException(String subEntNumber) {
         super("Subent: " + subEntNumber);
     }

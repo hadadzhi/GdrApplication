@@ -4,19 +4,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class NoSuchRecordException extends RuntimeException {
-    public NoSuchRecordException() {
+public class NotFoundException extends RuntimeException {
+    public NotFoundException() {
     }
     
-    public NoSuchRecordException(String message) {
+    public NotFoundException(String message) {
         super(message);
     }
     
-    public NoSuchRecordException(String message, Throwable cause) {
+    public NotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public NoSuchRecordException(Throwable cause) {
+    public NotFoundException(Throwable cause) {
         super(cause);
     }
 }

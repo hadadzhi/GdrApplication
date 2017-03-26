@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -26,17 +25,18 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.constants.Relations;
 import ru.cdfe.gdr.domain.Record;
 import ru.cdfe.gdr.domain.dto.RecordExcerpt;
-import ru.cdfe.gdr.exceptions.NoSuchRecordException;
-import ru.cdfe.gdr.exceptions.OptimisticLockingException;
+import ru.cdfe.gdr.exceptions.NotFoundException;
+import ru.cdfe.gdr.exceptions.ConflictException;
 import ru.cdfe.gdr.repositories.RecordRepository;
 import ru.cdfe.gdr.services.LinkService;
 
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @ExposesResourceFor(Record.class)
-@RequestMapping(Relations.REPOSITORY + "/" + Relations.RECORDS)
-@Slf4j
+@RequestMapping(Relations.RECORDS + "/" + Relations.RECORDS)
+@PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).RECORDS)")
 public class RecordController {
     private final RecordRepository recordRepository;
     private final EntityLinks entityLinks;
@@ -53,67 +53,65 @@ public class RecordController {
     }
     
     @GetMapping
+    @PreAuthorize("permitAll()")
     public PagedResources<Resource<RecordExcerpt>>
-    records(Pageable pageable, PagedResourcesAssembler<Record> assembler) {
+    getAll(Pageable pageable, PagedResourcesAssembler<Record> assembler) {
+        log.debug("GET: getting all records");
         
         final PagedResources<Resource<RecordExcerpt>> resources = assembler.toResource(
                 recordRepository.findAll(pageable),
                 record -> new Resource<>(new RecordExcerpt(record),
                         entityLinks.linkForSingleResource(record).withRel(Relations.RECORD)));
         
-        // #1 Set a proper self link
-        resources.getLinks().remove(resources.getLink(Link.REL_SELF));
-        resources.getLinks().add(linkService.pageLink(entityLinks.linkFor(Record.class), pageable, Link.REL_SELF));
-        
+        linkService.fixSelfLink(resources, pageable, RecordExcerpt.class);
         return resources;
     }
     
     @GetMapping("{id}")
-    public Resource<Record> record(@PathVariable String id) {
+    @PreAuthorize("permitAll()")
+    public Resource<Record> get(@PathVariable String id) {
+        log.debug("GET: getting record: {}", id);
         final Record record = Optional.ofNullable(recordRepository.findOne(id))
-                .orElseThrow(NoSuchRecordException::new);
+                .orElseThrow(NotFoundException::new);
         return new Resource<>(record, entityLinks.linkForSingleResource(record).withSelfRel());
     }
     
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).REPOSITORY)")
     public void delete(@PathVariable String id) {
         if (!recordRepository.exists(id)) {
             log.debug("DELETE: record {} does not exist", id);
-            throw new NoSuchRecordException();
+            throw new NotFoundException();
         }
-        log.debug("DELETE: {}", id);
+        log.debug("DELETE: deleting record: {}", id);
         recordRepository.delete(id);
     }
     
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).REPOSITORY)")
-    public void put(@PathVariable String id, @RequestBody /*@Validated*/ Record record) {
+    public void put(@PathVariable String id, @RequestBody @Validated Record record) {
         final Record existingRecord = recordRepository.findOne(id);
         
         if (existingRecord == null) {
-            log.debug("PUT: record {} does not exist", id);
-            throw new NoSuchRecordException();
+            log.debug("PUT: record does not exist: {}", id);
+            throw new NotFoundException();
         }
         
         record.setId(existingRecord.getId());
         record.setVersion(existingRecord.getVersion());
         
         try {
-            log.debug("PUT: {}", record);
+            log.debug("PUT: saving record: {}", record);
             recordRepository.save(record);
         } catch (OptimisticLockingFailureException e) {
-            log.warn("Optimistic locking failure: {}", e.getMessage());
-            throw new OptimisticLockingException(e);
+            log.warn("PUT: failed to save record: {}", e.getMessage());
+            throw new ConflictException("Concurrent modification", e);
         }
     }
     
     @PostMapping
-    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.constants.Authorities).REPOSITORY)")
     public ResponseEntity post(@RequestBody @Validated Record record) {
-        log.debug("POST: {}", record);
+        log.debug("POST: inserting record: {}", record);
         record = recordRepository.insert(record);
         return ResponseEntity.created(entityLinks.linkForSingleResource(record).toUri()).build();
     }

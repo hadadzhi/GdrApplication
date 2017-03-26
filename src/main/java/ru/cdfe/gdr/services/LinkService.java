@@ -3,8 +3,11 @@ package ru.cdfe.gdr.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.HateoasPageableHandlerMethodArgumentResolver;
+import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkBuilder;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.TemplateVariable;
 import org.springframework.hateoas.UriTemplate;
 import org.springframework.stereotype.Service;
@@ -21,10 +24,12 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Service
 public class LinkService {
     private final HateoasPageableHandlerMethodArgumentResolver resolver;
+    private final EntityLinks entityLinks;
     
     @Autowired
-    public LinkService(HateoasPageableHandlerMethodArgumentResolver resolver) {
+    public LinkService(HateoasPageableHandlerMethodArgumentResolver resolver, EntityLinks entityLinks) {
         this.resolver = resolver;
+        this.entityLinks = entityLinks;
     }
     
     public Link paginatedLink(LinkBuilder linkBuilder, String rel) {
@@ -44,7 +49,7 @@ public class LinkService {
         return linkTo(methodOn(ServiceController.class).fit(null)).withRel(Relations.FITTER);
     }
     
-    public Link newRecordLink() {
+    public Link exforLink() {
         final String uri = linkTo(ServiceController.class).slash(Relations.EXFOR).toUri().toString();
         final UriTemplate template = new UriTemplate(uri)
                 .with(Parameters.EXFOR_NUMBER, TemplateVariable.VariableType.REQUEST_PARAM)
@@ -52,5 +57,10 @@ public class LinkService {
                 .with(Parameters.CROSS_SECTION_COL, TemplateVariable.VariableType.REQUEST_PARAM)
                 .with(Parameters.CROSS_SECTION_ERR_COL, TemplateVariable.VariableType.REQUEST_PARAM);
         return new Link(template, Relations.EXFOR);
+    }
+    
+    public <T> void fixSelfLink(PagedResources<Resource<T>> pagedResources, Pageable page, Class<T> entityType) {
+        pagedResources.getLinks().remove(pagedResources.getLink(Link.REL_SELF));
+        pagedResources.getLinks().add(pageLink(entityLinks.linkFor(entityType), page, Link.REL_SELF));
     }
 }
