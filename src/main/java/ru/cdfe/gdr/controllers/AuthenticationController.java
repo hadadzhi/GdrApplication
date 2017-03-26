@@ -111,12 +111,13 @@ public class AuthenticationController {
         
         editedUser.setId(user.getId());
         editedUser.setVersion(user.getVersion());
-        
-        final String newSecret = editedUser.getSecret();
-        if (newSecret != null) {
-            editedUser.setSecret(passwordEncoder.encode(newSecret));
+    
+        String secret = editedUser.getSecret();
+        if (secret != null) {
+            editedUser.setSecret(passwordEncoder.encode(secret));
         } else {
             editedUser.setSecret(user.getSecret());
+            secret = user.getSecret();
         }
         
         try {
@@ -131,7 +132,7 @@ public class AuthenticationController {
         }
         
         logout(auth);
-        return login(new AuthenticationRequest(editedUser.getName(), newSecret), request);
+        return login(new AuthenticationRequest(editedUser.getName(), secret), request);
     }
     
     private String generateToken() {

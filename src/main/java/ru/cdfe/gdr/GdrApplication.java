@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.hateoas.UriTemplate;
 import org.springframework.hateoas.hal.CurieProvider;
 import org.springframework.hateoas.hal.DefaultCurieProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import ru.cdfe.gdr.constants.Constants;
@@ -40,7 +38,6 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
-import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toSet;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
@@ -92,10 +89,6 @@ public class GdrApplication {
         return args -> {
             recordRepository.deleteAll();
             IntStream.range(0, 1000).parallel().forEach(value -> {
-                SecurityContextHolder.getContext().setAuthentication(
-                        new UsernamePasswordAuthenticationToken("admin", "admin",
-                                singleton(Authority.RECORDS)));
-                
                 final Random random = ThreadLocalRandom.current();
                 final List<DataPoint> source = new ArrayList<>();
                 
