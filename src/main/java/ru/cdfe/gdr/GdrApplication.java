@@ -9,6 +9,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ErrorPageRegistrar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.hateoas.UriTemplate;
@@ -17,6 +19,7 @@ import org.springframework.hateoas.hal.DefaultCurieProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import ru.cdfe.gdr.constants.Constants;
+import ru.cdfe.gdr.constants.CurveTypes;
 import ru.cdfe.gdr.domain.Approximation;
 import ru.cdfe.gdr.domain.Curve;
 import ru.cdfe.gdr.domain.DataPoint;
@@ -28,7 +31,6 @@ import ru.cdfe.gdr.domain.security.Authority;
 import ru.cdfe.gdr.domain.security.User;
 import ru.cdfe.gdr.repositories.RecordRepository;
 import ru.cdfe.gdr.repositories.UserRepository;
-import ru.cdfe.gdr.services.FittingService;
 
 import javax.validation.Validator;
 import java.util.ArrayList;
@@ -44,11 +46,16 @@ import static java.util.stream.Collectors.toSet;
 @Slf4j
 @SpringBootApplication(exclude = {
         SecurityAutoConfiguration.class,
-        WebMvcAutoConfiguration.class
+        WebMvcAutoConfiguration.class,
 })
 public class GdrApplication {
     public static void main(String[] args) {
         SpringApplication.run(GdrApplication.class, args);
+    }
+    
+    @Bean
+    public ErrorPageRegistrar errorPageRegistrar() {
+        return registry -> registry.addErrorPages(new ErrorPage("/error"));
     }
     
     @Bean
@@ -109,8 +116,8 @@ public class GdrApplication {
                     IntStream.range(0, 2).forEach(j -> {
                         final Curve c = new Curve();
                         c.setType(random.nextBoolean() ?
-                                FittingService.Curves.GAUSSIAN :
-                                FittingService.Curves.LORENTZIAN);
+                                CurveTypes.GAUSSIAN :
+                                CurveTypes.LORENTZIAN);
                         c.setEnergyAtMaxCrossSection(new Quantity(random.nextDouble(), random.nextDouble(), "MeV"));
                         c.setFullWidthAtHalfMaximum(new Quantity(random.nextDouble(), random.nextDouble(), "MeV"));
                         c.setMaxCrossSection(new Quantity(random.nextDouble(), random.nextDouble(), "mb"));

@@ -116,8 +116,7 @@ public class ExforService {
             final DBRow crossSectionError = extractColumn(exforRow, crossSectionErrorColumn);
             
             if (!crossSection.getDim().equals(crossSectionError.getDim())) {
-                throw new BadExforDataException(
-                        "Cross section value dimension does not match cross section error dimension", subEntNumber);
+                throw new BadExforDataException();
             }
             
             return new DataPoint(
@@ -128,7 +127,7 @@ public class ExforService {
         private DBRow extractColumn(List<DBRow> exforRow, int column) {
             return exforRow.stream()
                     .filter(r -> r.getCol() == column)
-                    .findAny().orElseThrow(() -> new NoSuchColumnException(column, subEntNumber));
+                    .findAny().orElseThrow(NoSuchColumnException::new);
         }
         
         private void postProcessData(List<DataPoint> data) {

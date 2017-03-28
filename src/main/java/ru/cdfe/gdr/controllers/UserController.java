@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -27,9 +26,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.constants.Relations;
 import ru.cdfe.gdr.domain.security.User;
-import ru.cdfe.gdr.exceptions.BadRequestException;
-import ru.cdfe.gdr.exceptions.ConflictException;
 import ru.cdfe.gdr.exceptions.NotFoundException;
+import ru.cdfe.gdr.exceptions.OptimisticLockingException;
+import ru.cdfe.gdr.exceptions.SecretNotSpecifiedException;
+import ru.cdfe.gdr.exceptions.UserNameExistsException;
 import ru.cdfe.gdr.repositories.UserRepository;
 import ru.cdfe.gdr.services.LinkService;
 
@@ -38,10 +38,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @ExposesResourceFor(User.class)
-@RequestMapping(
-        value = Relations.REPOSITORY + "/" + Relations.USERS,
-        produces = MediaTypes.HAL_JSON_VALUE
-)
+@RequestMapping(Relations.REPOSITORY + "/" + Relations.USERS)
 @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).USERS)")
 public class UserController {
     private final UserRepository userRepository;
@@ -84,17 +81,17 @@ public class UserController {
         if (!userRepository.exists(id)) {
             throw new NotFoundException();
         }
-        log.debug("DELETE: deleting user: {}", id);
         userRepository.delete(id);
+        log.debug("DELETE: successful: {}", id);
     }
     
-    @PutMapping(value = "{id}", consumes = MediaTypes.HAL_JSON_VALUE)
+    @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void put(@PathVariable String id, @RequestBody @Validated User user) {
         final User existingUser = userRepository.findOne(id);
         
         if (existingUser == null) {
-            log.debug("PUT: user {} does not exist", id);
+            log.debug("PUT: user not found: {}", id);
             throw new NotFoundException();
         }
         
@@ -109,31 +106,33 @@ public class UserController {
         
         try {
             log.debug("PUT: saving user: {}", user);
-            userRepository.save(user);
-        } catch (OptimisticLockingFailureException e) {
-            log.warn("PUT: failed to save user: {}", e.getMessage());
-            throw new ConflictException("Concurrent modification", e);
+            user = userRepository.save(user);
+            log.debug("PUT: saved user:  {}", user);
         } catch (DuplicateKeyException e) {
-            log.warn("PUT: failed to save user: {}", e.getMessage());
-            throw new ConflictException("User name already exists", e);
+            log.debug("PUT: duplicate key: ", e);
+            throw new UserNameExistsException();
+        } catch (OptimisticLockingFailureException e) {
+            log.debug("PUT: optimistic locking failure: ", e);
+            throw new OptimisticLockingException();
         }
     }
     
-    @PostMapping(consumes = MediaTypes.HAL_JSON_VALUE)
+    @PostMapping
     public ResponseEntity post(@RequestBody @Validated User user) {
         if (user.getSecret() == null) {
             log.debug("POST: password not specified: {}", user);
-            throw new BadRequestException("The password must be specified");
+            throw new SecretNotSpecifiedException();
         }
         
         user.setSecret(passwordEncoder.encode(user.getSecret()));
-    
+        
         try {
             log.debug("POST: inserting user: {}", user);
             user = userRepository.insert(user);
+            log.debug("POST: inserted user:  {}", user);
         } catch (DuplicateKeyException e) {
-            log.warn("POST: failed to insert user: {}", e.getMessage());
-            throw new ConflictException("User name already exists", e);
+            log.debug("POST: duplicate key exception: ", e);
+            throw new UserNameExistsException();
         }
         
         return ResponseEntity.created(entityLinks.linkForSingleResource(user).toUri()).build();

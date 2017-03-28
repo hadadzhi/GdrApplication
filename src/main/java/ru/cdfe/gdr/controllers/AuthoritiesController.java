@@ -3,7 +3,6 @@ package ru.cdfe.gdr.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resources;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +15,7 @@ import java.util.Arrays;
 
 @RestController
 @ExposesResourceFor(Authority.class)
-@RequestMapping(
-        value = Relations.REPOSITORY + "/" + Relations.AUTHORITIES,
-        produces = MediaTypes.HAL_JSON_VALUE
-)
+@RequestMapping(Relations.REPOSITORY + "/" + Relations.AUTHORITIES)
 @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).USERS)")
 class AuthoritiesController {
     private final EntityLinks entityLinks;

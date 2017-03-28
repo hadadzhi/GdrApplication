@@ -1,7 +1,6 @@
 package ru.cdfe.gdr.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +14,7 @@ import ru.cdfe.gdr.services.LinkService;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
-@RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
+@RequestMapping
 public class HomeController {
     private final LinkService linkService;
     

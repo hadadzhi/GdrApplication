@@ -4,10 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,8 +27,9 @@ import ru.cdfe.gdr.domain.security.Authority;
 import ru.cdfe.gdr.domain.security.User;
 import ru.cdfe.gdr.domain.security.dto.AuthenticationRequest;
 import ru.cdfe.gdr.domain.security.dto.AuthenticationResponse;
-import ru.cdfe.gdr.exceptions.ConflictException;
-import ru.cdfe.gdr.exceptions.security.BadCredentialsException;
+import ru.cdfe.gdr.exceptions.BadCredentialsException;
+import ru.cdfe.gdr.exceptions.UserNameExistsException;
+import ru.cdfe.gdr.exceptions.OptimisticLockingException;
 import ru.cdfe.gdr.repositories.UserRepository;
 import ru.cdfe.gdr.security.AuthenticationInfo;
 import ru.cdfe.gdr.security.AuthenticationInfoRepository;
@@ -44,7 +43,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @Slf4j
 @RestController
-@RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
+@RequestMapping
 public class AuthenticationController {
     private final AuthenticationInfoRepository authenticationInfoRepository;
     private final PasswordEncoder passwordEncoder;
@@ -61,11 +60,7 @@ public class AuthenticationController {
         this.userRepository = userRepository;
     }
     
-    @PostMapping(
-            value = Relations.LOGIN,
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @PostMapping(Relations.LOGIN)
     public AuthenticationResponse login(@RequestBody @Validated AuthenticationRequest authRequest,
                                         HttpServletRequest httpRequest) {
         
@@ -109,7 +104,7 @@ public class AuthenticationController {
                 .slash(Relations.CURRENT_USER).withSelfRel());
     }
     
-    @PutMapping(value = Relations.CURRENT_USER, consumes = MediaTypes.HAL_JSON_VALUE)
+    @PutMapping(Relations.CURRENT_USER)
     @PreAuthorize("isFullyAuthenticated()")
     public AuthenticationResponse editCurrentUser(@AuthenticationPrincipal User user,
                                                   @RequestBody @Validated User editedUser,
@@ -132,13 +127,14 @@ public class AuthenticationController {
         
         try {
             log.debug("Saving edited user: {}", editedUser);
-            userRepository.save(editedUser);
+            editedUser = userRepository.save(editedUser);
+            log.debug("Saved edited user:  {}", editedUser);
         } catch (DataIntegrityViolationException e) {
-            log.warn("Failed to save edited user: {}", e.getMessage());
-            throw new ConflictException("User name already exists", e);
+            log.debug("Duplicate key: {}", e);
+            throw new UserNameExistsException();
         } catch (OptimisticLockingFailureException e) {
-            log.warn("Failed to save edited user: {}", e.getMessage());
-            throw new ConflictException("Concurrent modification", e);
+            log.debug("Optimistic locking failure: ", e);
+            throw new OptimisticLockingException();
         }
         
         logout(auth);

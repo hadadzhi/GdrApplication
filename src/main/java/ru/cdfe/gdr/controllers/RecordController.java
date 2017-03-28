@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -26,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.constants.Relations;
 import ru.cdfe.gdr.domain.Record;
 import ru.cdfe.gdr.domain.dto.RecordExcerpt;
-import ru.cdfe.gdr.exceptions.ConflictException;
 import ru.cdfe.gdr.exceptions.NotFoundException;
+import ru.cdfe.gdr.exceptions.OptimisticLockingException;
 import ru.cdfe.gdr.repositories.RecordRepository;
 import ru.cdfe.gdr.services.LinkService;
 
@@ -36,10 +35,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @ExposesResourceFor(Record.class)
-@RequestMapping(
-        value = Relations.REPOSITORY + "/" + Relations.RECORDS,
-        produces = MediaTypes.HAL_JSON_VALUE
-)
+@RequestMapping(Relations.REPOSITORY + "/" + Relations.RECORDS)
 @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).RECORDS)")
 public class RecordController {
     private final RecordRepository recordRepository;
@@ -84,14 +80,14 @@ public class RecordController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
         if (!recordRepository.exists(id)) {
-            log.debug("DELETE: record {} does not exist", id);
+            log.debug("DELETE: record not found: {}", id);
             throw new NotFoundException();
         }
-        log.debug("DELETE: deleting record: {}", id);
         recordRepository.delete(id);
+        log.debug("DELETE: successful: {}", id);
     }
     
-    @PutMapping(value = "{id}", consumes = MediaTypes.HAL_JSON_VALUE)
+    @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void put(@PathVariable String id, @RequestBody @Validated Record record) {
         final Record existingRecord = recordRepository.findOne(id);
@@ -106,17 +102,19 @@ public class RecordController {
         
         try {
             log.debug("PUT: saving record: {}", record);
-            recordRepository.save(record);
+            record = recordRepository.save(record);
+            log.debug("PUT: saved record:  {}", record);
         } catch (OptimisticLockingFailureException e) {
-            log.warn("PUT: failed to save record: {}", e.getMessage());
-            throw new ConflictException("Concurrent modification", e);
+            log.debug("PUT: optimistic locking failure: ", e);
+            throw new OptimisticLockingException();
         }
     }
     
-    @PostMapping(consumes = MediaTypes.HAL_JSON_VALUE)
+    @PostMapping
     public ResponseEntity post(@RequestBody @Validated Record record) {
         log.debug("POST: inserting record: {}", record);
         record = recordRepository.insert(record);
+        log.debug("POST: inserted record:  {}", record);
         return ResponseEntity.created(entityLinks.linkForSingleResource(record).toUri()).build();
     }
 }

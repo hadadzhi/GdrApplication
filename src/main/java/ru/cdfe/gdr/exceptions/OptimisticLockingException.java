@@ -2,9 +2,9 @@ package ru.cdfe.gdr.exceptions;
 
 import ru.cdfe.gdr.constants.ErrorCodes;
 
-public class NoSuchColumnException extends GdrException {
+public class OptimisticLockingException extends GdrException {
     @Override
     public String getErrorCode() {
-        return ErrorCodes.INVALID_EXFOR_COLUMN;
+        return ErrorCodes.CONCURRENT_EDITING;
     }
 }

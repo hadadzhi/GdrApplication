@@ -8,6 +8,7 @@ import org.freehep.math.minuit.FunctionMinimum;
 import org.freehep.math.minuit.MnMigrad;
 import org.freehep.math.minuit.MnUserParameters;
 import org.springframework.stereotype.Service;
+import ru.cdfe.gdr.constants.CurveTypes;
 import ru.cdfe.gdr.domain.Approximation;
 import ru.cdfe.gdr.domain.Curve;
 import ru.cdfe.gdr.domain.DataPoint;
@@ -46,17 +47,21 @@ public final class FittingService {
         
         final ChiSquaredFCN fcn = new ChiSquaredFCN(approximation.getCurves(), approximation.getSourceData());
         final FunctionMinimum min;
-        
+    
         try {
             min = new MnMigrad(fcn, mnUserParameters).minimize();
+        } catch (FittingException e) {
+            throw e;
         } catch (Exception e) {
-            throw new FittingException(e);
+            log.debug("Fitting exception: ", e);
+            throw new FittingException();
         }
         
         log.debug("FunctionMinimum: " + min.toString());
         
         if (!min.isValid()) {
-            throw new FittingException("Function minimum is not valid");
+            log.debug("Invalid minimum: {}", min);
+            throw new FittingException("Invalid minimum");
         }
         
         approximation.setChiSquared(min.fval());
@@ -84,9 +89,7 @@ public final class FittingService {
     
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class Curves {
-        public static final String GAUSSIAN = "gaussian";
-        public static final String LORENTZIAN = "lorentzian";
-        
+    
         private static double gaussian(double x, double scale, double loc, double width) {
             return scale * Math.exp(-0.5 * Math.pow((x - loc) / width, 2));
         }
@@ -115,12 +118,12 @@ public final class FittingService {
                 final double fullWidth = paramArray[paramIndex++];
                 
                 switch (curve.getType()) {
-                    case Curves.GAUSSIAN: {
+                    case CurveTypes.GAUSSIAN: {
                         sum += Curves.gaussian(x, maxCrossSection, energyAtMaxCrossSection,
                                 fullWidth / (2 * Math.sqrt(2 * Math.log(2))));
                         break;
                     }
-                    case Curves.LORENTZIAN: {
+                    case CurveTypes.LORENTZIAN: {
                         sum += Curves.lorentzian(x, (Math.PI / 2) * fullWidth * maxCrossSection,
                                 energyAtMaxCrossSection, fullWidth / 2);
                         break;
