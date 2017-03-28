@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.springframework.hateoas.core.Relation;
 import org.springframework.security.core.GrantedAuthority;
-import ru.cdfe.gdr.constants.Relations;
+import ru.cdfe.gdr.constant.Relations;
 
 @Getter
 @ToString

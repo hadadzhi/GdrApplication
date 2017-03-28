@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.RequestAttributes;
-import ru.cdfe.gdr.constants.ErrorCodes;
-import ru.cdfe.gdr.exceptions.GdrException;
+import ru.cdfe.gdr.constant.ErrorCodes;
+import ru.cdfe.gdr.exception.GdrException;
 
 import java.util.Map;
 
@@ -19,10 +19,11 @@ public class GdrErrorAttributes extends DefaultErrorAttributes {
     }
     
     private void addErrorCode(Map<String, Object> attributes, Throwable exception) {
+        final String key = "code";
         if (exception instanceof GdrException) {
-            attributes.put("code", GdrException.class.cast(exception).getErrorCode());
+            attributes.put(key, GdrException.class.cast(exception).getErrorCode());
         } else if (exception instanceof MethodArgumentNotValidException) {
-            attributes.put("code", ErrorCodes.VALIDATION_FAILURE);
+            attributes.put(key, ErrorCodes.VALIDATION_FAILURE);
         }
     }
 }

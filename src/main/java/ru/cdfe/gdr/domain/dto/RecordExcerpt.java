@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Data;
 import org.springframework.hateoas.core.Relation;
-import ru.cdfe.gdr.constants.Relations;
+import ru.cdfe.gdr.constant.Relations;
 import ru.cdfe.gdr.domain.Approximation;
 import ru.cdfe.gdr.domain.Curve;
 import ru.cdfe.gdr.domain.Nucleus;

@@ -8,7 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.cdfe.gdr.constants.Constants;
+import ru.cdfe.gdr.constant.SecurityConstants;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -43,7 +43,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 return; // Do nothing if already authenticated through Spring Security
             }
             
-            final String token = request.getHeader(Constants.AUTH_HEADER_NAME);
+            final String token = request.getHeader(SecurityConstants.AUTH_HEADER_NAME);
             if (token != null) {
                 final AuthenticationInfo authInfo = authenticationInfoRepository.get(token);
                 if (authInfo != null) {
@@ -52,7 +52,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                         authenticationInfoRepository.remove(token);
                     } else {
                         final Authentication auth = authInfo.getAuthentication();
-                        final Instant expiry = now.plus(Constants.AUTH_SESSION_LENGTH);
+                        final Instant expiry = now.plus(SecurityConstants.AUTH_SESSION_LENGTH);
                         authenticationInfoRepository.put(token, new AuthenticationInfo(auth, expiry));
                         SecurityContextHolder.getContext().setAuthentication(auth);
                     }

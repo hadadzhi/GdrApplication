@@ -16,8 +16,8 @@ import org.springframework.hateoas.hal.CurieProvider;
 import org.springframework.hateoas.hal.DefaultCurieProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import ru.cdfe.gdr.constants.Constants;
-import ru.cdfe.gdr.constants.CurveTypes;
+import ru.cdfe.gdr.constant.SecurityConstants;
+import ru.cdfe.gdr.constant.CurveTypes;
 import ru.cdfe.gdr.domain.Approximation;
 import ru.cdfe.gdr.domain.Curve;
 import ru.cdfe.gdr.domain.DataPoint;
@@ -27,8 +27,8 @@ import ru.cdfe.gdr.domain.Reaction;
 import ru.cdfe.gdr.domain.Record;
 import ru.cdfe.gdr.domain.security.Authority;
 import ru.cdfe.gdr.domain.security.User;
-import ru.cdfe.gdr.repositories.RecordRepository;
-import ru.cdfe.gdr.repositories.UserRepository;
+import ru.cdfe.gdr.repository.RecordRepository;
+import ru.cdfe.gdr.repository.UserRepository;
 
 import javax.validation.Validator;
 import java.util.ArrayList;
@@ -75,12 +75,12 @@ public class GdrApplication {
             if (userRepository.count() == 0) {
                 final User defaultUser = new User();
                 
-                defaultUser.setName(Constants.DEFAULT_USER_NAME);
-                defaultUser.setSecret(passwordEncoder.encode(Constants.DEFAULT_USER_SECRET));
+                defaultUser.setName(SecurityConstants.DEFAULT_USER_NAME);
+                defaultUser.setSecret(passwordEncoder.encode(SecurityConstants.DEFAULT_USER_SECRET));
                 defaultUser.setAuthorities(Arrays.stream(Authority.values()).collect(toSet()));
                 
                 log.info("No users found, creating default user: {}, with password: {}",
-                        defaultUser, Constants.DEFAULT_USER_SECRET);
+                        defaultUser, SecurityConstants.DEFAULT_USER_SECRET);
                 
                 userRepository.insert(defaultUser);
             }

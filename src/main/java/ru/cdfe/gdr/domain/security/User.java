@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.hateoas.Identifiable;
 import org.springframework.hateoas.core.Relation;
-import ru.cdfe.gdr.constants.Relations;
+import ru.cdfe.gdr.constant.Relations;
 
 import javax.validation.constraints.Pattern;
 import java.math.BigInteger;
