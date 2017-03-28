@@ -9,8 +9,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.web.servlet.ErrorPage;
-import org.springframework.boot.web.servlet.ErrorPageRegistrar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.hateoas.UriTemplate;
@@ -51,11 +49,6 @@ import static java.util.stream.Collectors.toSet;
 public class GdrApplication {
     public static void main(String[] args) {
         SpringApplication.run(GdrApplication.class, args);
-    }
-    
-    @Bean
-    public ErrorPageRegistrar errorPageRegistrar() {
-        return registry -> registry.addErrorPages(new ErrorPage("/error"));
     }
     
     @Bean
