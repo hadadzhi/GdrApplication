@@ -116,7 +116,7 @@ public class ExforService {
             final DBRow crossSectionError = extractColumn(exforRow, crossSectionErrorColumn);
             
             if (!crossSection.getDim().equals(crossSectionError.getDim())) {
-                throw new BadExforDataException();
+                throw new BadExforDataException(subEntNumber);
             }
             
             return new DataPoint(

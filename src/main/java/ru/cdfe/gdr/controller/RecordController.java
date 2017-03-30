@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.constant.Relations;
 import ru.cdfe.gdr.domain.Record;
 import ru.cdfe.gdr.domain.dto.RecordExcerpt;
-import ru.cdfe.gdr.exception.NotFoundException;
+import ru.cdfe.gdr.exception.RecordNotFound;
 import ru.cdfe.gdr.exception.OptimisticLockingException;
 import ru.cdfe.gdr.repository.RecordRepository;
 import ru.cdfe.gdr.service.LinkService;
@@ -56,7 +56,7 @@ public class RecordController {
     @PreAuthorize("permitAll()")
     public PagedResources<Resource<RecordExcerpt>>
     getAll(Pageable pageable, PagedResourcesAssembler<Record> assembler) {
-        log.debug("GET: getting all records");
+        log.debug("GET: all records");
         
         final PagedResources<Resource<RecordExcerpt>> resources = assembler.toResource(
                 recordRepository.findAll(pageable),
@@ -70,9 +70,8 @@ public class RecordController {
     @GetMapping("{id}")
     @PreAuthorize("permitAll()")
     public Resource<Record> get(@PathVariable String id) {
-        log.debug("GET: getting record: {}", id);
-        final Record record = Optional.ofNullable(recordRepository.findOne(id))
-                .orElseThrow(NotFoundException::new);
+        log.debug("GET: record: {}", id);
+        final Record record = Optional.ofNullable(recordRepository.findOne(id)).orElseThrow(RecordNotFound::new);
         return new Resource<>(record, entityLinks.linkForSingleResource(record).withSelfRel());
     }
     
@@ -81,10 +80,10 @@ public class RecordController {
     public void delete(@PathVariable String id) {
         if (!recordRepository.exists(id)) {
             log.debug("DELETE: record not found: {}", id);
-            throw new NotFoundException();
+            throw new RecordNotFound();
         }
         recordRepository.delete(id);
-        log.debug("DELETE: successful: {}", id);
+        log.debug("DELETE: deleted record: {}", id);
     }
     
     @PutMapping("{id}")
@@ -93,8 +92,8 @@ public class RecordController {
         final Record existingRecord = recordRepository.findOne(id);
         
         if (existingRecord == null) {
-            log.debug("PUT: record does not exist: {}", id);
-            throw new NotFoundException();
+            log.debug("PUT: record not found: {}", id);
+            throw new RecordNotFound();
         }
         
         record.setId(existingRecord.getId());

@@ -7,4 +7,19 @@ public class OptimisticLockingException extends GdrException {
     public String getErrorCode() {
         return ErrorCodes.CONCURRENT_EDITING;
     }
+    
+    public OptimisticLockingException() {
+    }
+    
+    public OptimisticLockingException(String message) {
+        super(message);
+    }
+    
+    public OptimisticLockingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    
+    public OptimisticLockingException(Throwable cause) {
+        super(cause);
+    }
 }

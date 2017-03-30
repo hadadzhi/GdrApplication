@@ -10,4 +10,19 @@ public class SecretNotSpecifiedException extends GdrException {
     public String getErrorCode() {
         return ErrorCodes.SECRET_NOT_SPECIFIED;
     }
+    
+    public SecretNotSpecifiedException() {
+    }
+    
+    public SecretNotSpecifiedException(String message) {
+        super(message);
+    }
+    
+    public SecretNotSpecifiedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    
+    public SecretNotSpecifiedException(Throwable cause) {
+        super(cause);
+    }
 }

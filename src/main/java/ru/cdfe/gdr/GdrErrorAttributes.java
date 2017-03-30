@@ -14,16 +14,17 @@ public class GdrErrorAttributes extends DefaultErrorAttributes {
     @Override
     public Map<String, Object> getErrorAttributes(RequestAttributes requestAttributes, boolean includeStackTrace) {
         final Map<String, Object> errorAttributes = super.getErrorAttributes(requestAttributes, includeStackTrace);
-        addErrorCode(errorAttributes, getError(requestAttributes));
+        
+        errorAttributes.compute("code", (k, v) -> {
+            final Throwable ex = getError(requestAttributes);
+            if (ex instanceof GdrException) {
+                return GdrException.class.cast(ex).getErrorCode();
+            } else if (ex instanceof MethodArgumentNotValidException) {
+                return ErrorCodes.VALIDATION_FAILURE;
+            }
+            return null;
+        });
+        
         return errorAttributes;
-    }
-    
-    private void addErrorCode(Map<String, Object> attributes, Throwable exception) {
-        final String key = "code";
-        if (exception instanceof GdrException) {
-            attributes.put(key, GdrException.class.cast(exception).getErrorCode());
-        } else if (exception instanceof MethodArgumentNotValidException) {
-            attributes.put(key, ErrorCodes.VALIDATION_FAILURE);
-        }
     }
 }

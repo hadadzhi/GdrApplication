@@ -10,4 +10,19 @@ public class BadExforDataException extends GdrException {
     public String getErrorCode() {
         return ErrorCodes.BAD_EXFOR_DATA;
     }
+    
+    public BadExforDataException() {
+    }
+    
+    public BadExforDataException(String message) {
+        super(message);
+    }
+    
+    public BadExforDataException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    
+    public BadExforDataException(Throwable cause) {
+        super(cause);
+    }
 }

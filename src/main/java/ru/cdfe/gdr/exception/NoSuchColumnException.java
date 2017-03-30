@@ -7,4 +7,19 @@ public class NoSuchColumnException extends GdrException {
     public String getErrorCode() {
         return ErrorCodes.INVALID_EXFOR_COLUMN;
     }
+    
+    public NoSuchColumnException() {
+    }
+    
+    public NoSuchColumnException(String message) {
+        super(message);
+    }
+    
+    public NoSuchColumnException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    
+    public NoSuchColumnException(Throwable cause) {
+        super(cause);
+    }
 }

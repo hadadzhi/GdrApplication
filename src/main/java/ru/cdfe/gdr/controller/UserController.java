@@ -26,10 +26,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.constant.Relations;
 import ru.cdfe.gdr.domain.security.User;
-import ru.cdfe.gdr.exception.NotFoundException;
 import ru.cdfe.gdr.exception.OptimisticLockingException;
 import ru.cdfe.gdr.exception.SecretNotSpecifiedException;
 import ru.cdfe.gdr.exception.UserNameExistsException;
+import ru.cdfe.gdr.exception.UserNotFound;
 import ru.cdfe.gdr.repository.UserRepository;
 import ru.cdfe.gdr.service.LinkService;
 
@@ -60,7 +60,7 @@ public class UserController {
     
     @GetMapping
     public PagedResources<Resource<User>> getAll(Pageable pageable, PagedResourcesAssembler<User> assembler) {
-        log.debug("GET: getting all users");
+        log.debug("GET: all users");
         final PagedResources<Resource<User>> users = assembler.toResource(
                 userRepository.findAll(pageable),
                 user -> new Resource<>(user, entityLinks.linkForSingleResource(user).withSelfRel()));
@@ -70,19 +70,19 @@ public class UserController {
     
     @GetMapping("{id}")
     public Resource<User> get(@PathVariable String id) {
-        log.debug("GET: getting user: {}", id);
-        final User user = Optional.ofNullable(userRepository.findOne(id))
-                .orElseThrow(NotFoundException::new);
+        log.debug("GET: user: {}", id);
+        final User user = Optional.ofNullable(userRepository.findOne(id)).orElseThrow(UserNotFound::new);
         return new Resource<>(user, entityLinks.linkForSingleResource(user).withSelfRel());
     }
     
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id) {
         if (!userRepository.exists(id)) {
-            throw new NotFoundException();
+            log.debug("DELETE: user not found: {}", id);
+            throw new UserNotFound();
         }
         userRepository.delete(id);
-        log.debug("DELETE: successful: {}", id);
+        log.debug("DELETE: deleted user: {}", id);
     }
     
     @PutMapping("{id}")
@@ -92,7 +92,7 @@ public class UserController {
         
         if (existingUser == null) {
             log.debug("PUT: user not found: {}", id);
-            throw new NotFoundException();
+            throw new UserNotFound();
         }
         
         user.setId(existingUser.getId());
@@ -120,7 +120,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity post(@RequestBody @Validated User user) {
         if (user.getSecret() == null) {
-            log.debug("POST: password not specified: {}", user);
+            log.debug("POST: secret not specified: {}", user);
             throw new SecretNotSpecifiedException();
         }
         
@@ -131,7 +131,7 @@ public class UserController {
             user = userRepository.insert(user);
             log.debug("POST: inserted user:  {}", user);
         } catch (DuplicateKeyException e) {
-            log.debug("POST: duplicate key exception: ", e);
+            log.debug("POST: duplicate key: ", e);
             throw new UserNameExistsException();
         }
         

@@ -4,25 +4,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.cdfe.gdr.constant.ErrorCodes;
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class UserNameExistsException extends GdrException {
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class RecordNotFound extends GdrException {
     @Override
     public String getErrorCode() {
-        return ErrorCodes.USERNAME_EXISTS;
+        return ErrorCodes.RECORD_NOT_FOUND;
     }
     
-    public UserNameExistsException() {
+    public RecordNotFound() {
     }
     
-    public UserNameExistsException(String message) {
+    public RecordNotFound(String message) {
         super(message);
     }
     
-    public UserNameExistsException(String message, Throwable cause) {
+    public RecordNotFound(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public UserNameExistsException(Throwable cause) {
+    public RecordNotFound(Throwable cause) {
         super(cause);
     }
 }
