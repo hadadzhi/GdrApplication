@@ -21,15 +21,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.cdfe.gdr.constant.SecurityConstants;
 import ru.cdfe.gdr.constant.Relations;
+import ru.cdfe.gdr.constant.SecurityConstants;
 import ru.cdfe.gdr.domain.security.Authority;
 import ru.cdfe.gdr.domain.security.User;
 import ru.cdfe.gdr.domain.security.dto.AuthenticationRequest;
 import ru.cdfe.gdr.domain.security.dto.AuthenticationResponse;
 import ru.cdfe.gdr.exception.BadCredentialsException;
-import ru.cdfe.gdr.exception.UserNameExistsException;
 import ru.cdfe.gdr.exception.OptimisticLockingException;
+import ru.cdfe.gdr.exception.UserNameExistsException;
 import ru.cdfe.gdr.repository.UserRepository;
 import ru.cdfe.gdr.security.AuthenticationInfo;
 import ru.cdfe.gdr.security.AuthenticationInfoRepository;
@@ -118,7 +118,7 @@ public class AuthenticationController {
         
         editedUser.setId(user.getId());
         editedUser.setVersion(user.getVersion());
-    
+        
         if (editedUser.getSecret() != null) {
             editedUser.setSecret(passwordEncoder.encode(editedUser.getSecret()));
         } else {

@@ -27,7 +27,7 @@ public enum Authority implements GrantedAuthority {
         this.name = super.toString();
         this.description = description;
     }
-
+    
     @JsonCreator
     public static Authority fromJsonNode(JsonNode node) {
         if (node.has("name")) {

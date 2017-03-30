@@ -22,7 +22,7 @@ public class Approximation {
     @NotEmpty
     @Valid
     private List<DataPoint> sourceData;
-
+    
     @NotEmpty
     @Valid
     private List<Curve> curves;

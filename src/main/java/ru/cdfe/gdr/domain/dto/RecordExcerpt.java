@@ -21,9 +21,9 @@ public class RecordExcerpt {
     private final Quantity maxCrossSection;
     private final Quantity energyAtMaxCrossSection;
     private final Quantity fullWidthAtHalfMaximum;
-
+    
     private final double chiSquaredReduced;
-
+    
     private final Nucleus target;
     
     public RecordExcerpt(Record record) {

@@ -41,9 +41,10 @@ public class ExforService {
     }
     
     private static class ReactionRetriever {
-        private static final String QUERY =
+        private static final String QUERY = // @formatter:off
                 "SELECT react1.tz, react1.ta, react1.pz, react1.pa, react1.inc, react1.`out` " +
                 "FROM react1\n WHERE react1.subent = ?";
+        // @formatter:on
         
         private final JdbcTemplate jdbc;
         private final String subEntNumber;
@@ -68,18 +69,19 @@ public class ExforService {
     }
     
     private static class DataRetriever {
-        public static final String QUERY =
+        public static final String QUERY = //@formatter:off
                 "SELECT ddata.row, ddata.col, ddata.dt, dhead.unit " +
                 "FROM ddata " +
                 "JOIN dhead ON ddata.col = dhead.col AND ddata.subent = dhead.subent AND ddata.isc = dhead.isc " +
                 "WHERE ddata.isc = 'd' AND ddata.subent = ?";
+        //@formatter:on
         
         private final JdbcTemplate jdbc;
         private final String subEntNumber;
         private final int energyColumn;
         private final int crossSectionColumn;
         private final int crossSectionErrorColumn;
-    
+        
         private DataRetriever(JdbcTemplate jdbc, String subEntNumber, int energyColumn, int crossSectionColumn, int
                 crossSectionErrorColumn) {
             this.jdbc = jdbc;
@@ -132,16 +134,16 @@ public class ExforService {
         
         private void postProcessData(List<DataPoint> data) {
             exforInterpolate(i -> data.get(i).getEnergy().getValue(),
-                            (i, v) -> data.get(i).getEnergy().setValue(v),
-                            data.size());
+                    (i, v) -> data.get(i).getEnergy().setValue(v),
+                    data.size());
             
             exforInterpolate(i -> data.get(i).getCrossSection().getValue(),
-                            (i, v) -> data.get(i).getCrossSection().setValue(v),
-                            data.size());
+                    (i, v) -> data.get(i).getCrossSection().setValue(v),
+                    data.size());
             
             exforInterpolate(i -> data.get(i).getCrossSection().getError(),
-                            (i, v) -> data.get(i).getCrossSection().setError(v),
-                            data.size());
+                    (i, v) -> data.get(i).getCrossSection().setError(v),
+                    data.size());
         }
         
         private void exforInterpolate(DoubleListGetter getter, DoubleListSetter setter, int size) {

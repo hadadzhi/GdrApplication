@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.constant.Relations;
 import ru.cdfe.gdr.domain.Record;
 import ru.cdfe.gdr.domain.dto.RecordExcerpt;
-import ru.cdfe.gdr.exception.RecordNotFound;
 import ru.cdfe.gdr.exception.OptimisticLockingException;
+import ru.cdfe.gdr.exception.RecordNotFound;
 import ru.cdfe.gdr.repository.RecordRepository;
 import ru.cdfe.gdr.service.LinkService;
 

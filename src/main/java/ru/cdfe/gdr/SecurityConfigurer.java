@@ -25,7 +25,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     }
     
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configure(HttpSecurity http) throws Exception { //@formatter:off
         http
             /*
              * Disable stuff we don't need that's on by default.
@@ -46,7 +46,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
              * Allow all requests: access control is done through global method security.
              */
             .authorizeRequests().anyRequest().permitAll();
-    }
+    } //@formatter:on
     
     @Bean
     public PasswordEncoder passwordEncoder() {

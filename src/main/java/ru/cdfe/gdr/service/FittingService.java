@@ -47,7 +47,7 @@ public final class FittingService {
         
         final ChiSquaredFCN fcn = new ChiSquaredFCN(approximation.getCurves(), approximation.getSourceData());
         final FunctionMinimum min;
-    
+        
         try {
             min = new MnMigrad(fcn, mnUserParameters).minimize();
         } catch (FittingException e) {
@@ -89,7 +89,7 @@ public final class FittingService {
     
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class Curves {
-    
+        
         private static double gaussian(double x, double scale, double loc, double width) {
             return scale * Math.exp(-0.5 * Math.pow((x - loc) / width, 2));
         }

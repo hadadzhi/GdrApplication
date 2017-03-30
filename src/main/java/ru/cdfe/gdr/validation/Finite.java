@@ -19,9 +19,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Accepts {@link Float} and {@link Double}.
  */
 @Documented
-@Target({ ANNOTATION_TYPE, FIELD, PARAMETER, METHOD, CONSTRUCTOR })
+@Target({ANNOTATION_TYPE, FIELD, PARAMETER, METHOD, CONSTRUCTOR})
 @Retention(RUNTIME)
-@Constraint(validatedBy = { FiniteDoubleValidator.class, FiniteFloatValidator.class })
+@Constraint(validatedBy = {FiniteDoubleValidator.class, FiniteFloatValidator.class})
 public @interface Finite {
     String message() default "may not be infinite or NaN";
     
