@@ -52,7 +52,7 @@ public class GdrApplication {
     }
     
     @Bean
-    public CurieProvider curieProvider(GdrApplicationProperties conf) {
+    public CurieProvider curieProvider(GdrProperties conf) {
         return new DefaultCurieProvider(conf.getCurieName(), new UriTemplate(conf.getCurieUrlTemplate()));
     }
     
