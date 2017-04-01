@@ -16,6 +16,7 @@ import org.springframework.hateoas.hal.CurieProvider;
 import org.springframework.hateoas.hal.DefaultCurieProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import ru.cdfe.gdr.constant.CommandLineOptions;
 import ru.cdfe.gdr.constant.CurveTypes;
 import ru.cdfe.gdr.constant.SecurityConstants;
 import ru.cdfe.gdr.domain.Approximation;
@@ -47,6 +48,7 @@ import static java.util.stream.Collectors.toSet;
         WebMvcAutoConfiguration.class,
 })
 public class GdrApplication {
+    
     public static void main(String[] args) {
         SpringApplication.run(GdrApplication.class, args);
     }
@@ -72,17 +74,27 @@ public class GdrApplication {
     @Bean
     public ApplicationRunner defaultUserCreator(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            if (userRepository.count() == 0) {
-                final User defaultUser = new User();
+            if (userRepository.count() == 0 || args.getOptionValues(CommandLineOptions.CREATE_DEFAULT_USER) != null) {
+                User defaultUser = new User();
                 
                 defaultUser.setName(SecurityConstants.DEFAULT_USER_NAME);
                 defaultUser.setSecret(passwordEncoder.encode(SecurityConstants.DEFAULT_USER_SECRET));
                 defaultUser.setAuthorities(Arrays.stream(Authority.values()).collect(toSet()));
                 
-                log.info("No users found, creating default user: {}, with password: {}",
-                        defaultUser, SecurityConstants.DEFAULT_USER_SECRET);
+                final User existingUser = userRepository.findByName(SecurityConstants.DEFAULT_USER_NAME);
+                if (existingUser != null) {
+                    log.warn("DefaultUserCreator: default user already exists, overwriting");
+                    
+                    defaultUser.setId(existingUser.getId());
+                    defaultUser.setVersion(existingUser.getVersion());
+                    
+                    defaultUser = userRepository.save(defaultUser);
+                } else {
+                    defaultUser = userRepository.insert(defaultUser);
+                }
                 
-                userRepository.insert(defaultUser);
+                log.info("DefaultUserCreator: created default user: {}, with password: {}",
+                        defaultUser, SecurityConstants.DEFAULT_USER_SECRET);
             }
         };
     }
@@ -142,7 +154,7 @@ public class GdrApplication {
                 rn2.setTarget(new Nucleus(random.nextInt(100) + 1, random.nextInt(100) + 1));
                 rn2.setProduct(new Nucleus(random.nextInt(100) + 1, random.nextInt(100) + 1));
                 
-                final Record r = new Record();
+                Record r = new Record();
                 r.setEnergyCenter(new Quantity(random.nextDouble(), random.nextDouble(), "MeV"));
                 r.setFirstMoment(new Quantity(random.nextDouble(), random.nextDouble(), "mb"));
                 r.setIntegratedCrossSection(new Quantity(random.nextDouble(), random.nextDouble(), "MeV*mb"));
@@ -152,7 +164,8 @@ public class GdrApplication {
                 r.setExforNumber(UUID.randomUUID().toString()
                         .toUpperCase().replace("-", "").substring(0, 8));
                 
-                recordRepository.insert(r);
+                r = recordRepository.insert(r);
+                log.debug("RandomDataCreator: inserted record: {}", r);
             });
         };
     }
