@@ -8,8 +8,6 @@ import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
@@ -33,6 +31,8 @@ import ru.cdfe.gdr.exception.UserNameExistsException;
 import ru.cdfe.gdr.repository.UserRepository;
 import ru.cdfe.gdr.security.AuthenticationInfo;
 import ru.cdfe.gdr.security.AuthenticationInfoRepository;
+import ru.cdfe.gdr.security.GdrAuthenticationToken;
+import ru.cdfe.gdr.security.annotation.GdrAuthenticated;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.SecureRandom;
@@ -61,55 +61,54 @@ public class AuthenticationController {
     }
     
     @PostMapping(Relations.LOGIN)
+    @PreAuthorize("permitAll()")
     public AuthenticationResponse login(@RequestBody @Validated AuthenticationRequest authRequest,
                                         HttpServletRequest httpRequest) {
         
         final User user = userRepository.findByName(authRequest.getName());
         
         if (user != null && passwordEncoder.matches(authRequest.getSecret(), user.getSecret())) {
-            return loginInternal(user, httpRequest);
+            return new AuthenticationResponse(loginUser(user, httpRequest));
         }
         
-        log.warn("Login failure: {}", authRequest.getName());
+        log.info("Login failure: {}", authRequest.getName());
         throw new BadCredentialsException();
     }
     
-    private AuthenticationResponse loginInternal(User user, HttpServletRequest httpRequest) {
-        final Instant expiry = Instant.now().plus(SecurityConstants.AUTH_SESSION_LENGTH);
+    private String loginUser(User user, HttpServletRequest httpRequest) {
         final String token = generateToken();
-        
-        final UsernamePasswordAuthenticationToken auth =
-                new UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());
+        final GdrAuthenticationToken auth = new GdrAuthenticationToken(user, token);
         
         auth.setDetails(new WebAuthenticationDetails(httpRequest));
         
+        final Instant expiry = Instant.now().plus(SecurityConstants.AUTH_SESSION_LENGTH);
         authenticationInfoRepository.put(token, new AuthenticationInfo(auth, expiry));
         
         log.info("Login success: {}", user);
-        return new AuthenticationResponse(token);
+        return token;
     }
     
     @PostMapping(Relations.LOGOUT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("isFullyAuthenticated()")
-    public void logout(Authentication auth) {
-        authenticationInfoRepository.remove(String.class.cast(auth.getCredentials()));
+    @GdrAuthenticated
+    public void logout(GdrAuthenticationToken auth) {
+        authenticationInfoRepository.remove(auth.getToken());
         log.info("Logout success: {}", auth.getPrincipal());
     }
     
     @GetMapping(Relations.CURRENT_USER)
-    @PreAuthorize("isFullyAuthenticated()")
+    @GdrAuthenticated
     public Resource<User> currentUser(@AuthenticationPrincipal User user) {
         return new Resource<>(user, linkTo(AuthenticationController.class)
                 .slash(Relations.CURRENT_USER).withSelfRel());
     }
     
     @PutMapping(Relations.CURRENT_USER)
-    @PreAuthorize("isFullyAuthenticated()")
+    @GdrAuthenticated
     public AuthenticationResponse editCurrentUser(@AuthenticationPrincipal User user,
                                                   @RequestBody @Validated User editedUser,
                                                   HttpServletRequest request,
-                                                  Authentication auth) {
+                                                  GdrAuthenticationToken auth) {
         
         if (!editedUser.getAuthorities().equals(user.getAuthorities()) &&
                 !user.getAuthorities().contains(Authority.USERS)) {
@@ -138,7 +137,7 @@ public class AuthenticationController {
         }
         
         logout(auth);
-        return loginInternal(user, request);
+        return new AuthenticationResponse(loginUser(user, request));
     }
     
     private String generateToken() {

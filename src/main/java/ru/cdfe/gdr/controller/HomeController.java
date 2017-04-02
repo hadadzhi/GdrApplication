@@ -34,7 +34,8 @@ public class HomeController {
             links.add(linkTo(AuthenticationController.class).slash(Relations.LOGIN).withRel(Relations.LOGIN));
         } else {
             links.add(linkTo(AuthenticationController.class).slash(Relations.LOGOUT).withRel(Relations.LOGOUT));
-            links.add(linkTo(AuthenticationController.class).slash(Relations.CURRENT_USER).withRel(Relations.CURRENT_USER));
+            links.add(linkTo(AuthenticationController.class).slash(Relations.CURRENT_USER)
+                    .withRel(Relations.CURRENT_USER));
             
             if (user.getAuthorities().contains(Authority.EXFOR)) {
                 links.add(linkService.exforLink());
