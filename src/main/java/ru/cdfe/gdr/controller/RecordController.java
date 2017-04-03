@@ -7,8 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.UriTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,8 +22,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+import ru.cdfe.gdr.constant.Parameters;
 import ru.cdfe.gdr.constant.Relations;
 import ru.cdfe.gdr.domain.Record;
 import ru.cdfe.gdr.domain.dto.RecordExcerpt;
@@ -55,15 +60,28 @@ public class RecordController {
     @GetMapping
     @PreAuthorize("permitAll()")
     public PagedResources<Resource<RecordExcerpt>>
-    getAll(Pageable pageable, PagedResourcesAssembler<Record> assembler) {
-        log.debug("GET: all records");
+    getAll(@RequestParam(name = Parameters.SUBENT, required = false) String subent,
+           Pageable pageable,
+           PagedResourcesAssembler<Record> assembler) {
+        
+        log.debug(subent != null ? "GET: records for subent " + subent : "GET: all records");
         
         final PagedResources<Resource<RecordExcerpt>> resources = assembler.toResource(
-                recordRepository.findAll(pageable),
+                subent != null ?
+                        recordRepository.findByExforNumber(subent, pageable) :
+                        recordRepository.findAll(pageable),
                 record -> new Resource<>(new RecordExcerpt(record),
                         entityLinks.linkForSingleResource(record).withRel(Relations.RECORD)));
         
-        linkService.fixSelfLink(resources, pageable, entityLinks.linkFor(Record.class));
+        final UriComponentsBuilder builder = linkService.pageLinkBuilder(entityLinks.linkFor(Record.class), pageable);
+        
+        if (subent != null) {
+            builder.queryParam(Parameters.SUBENT, subent);
+        }
+        
+        resources.getLinks().remove(resources.getLink(Link.REL_SELF));
+        resources.getLinks().add(new Link(new UriTemplate(builder.toUriString()), Link.REL_SELF));
+        
         return resources;
     }
     
@@ -88,7 +106,9 @@ public class RecordController {
     
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void put(@PathVariable String id, @RequestBody @Validated Record record) {
+    public void put(@PathVariable String id,
+                    @RequestBody @Validated Record record) {
+        
         final Record existingRecord = recordRepository.findOne(id);
         
         if (existingRecord == null) {

@@ -1,5 +1,7 @@
 package ru.cdfe.gdr.validation;
 
+import ru.cdfe.gdr.validation.annotation.Finite;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 

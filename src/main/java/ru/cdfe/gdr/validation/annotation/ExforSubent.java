@@ -1,7 +1,8 @@
-package ru.cdfe.gdr.validation;
+package ru.cdfe.gdr.validation.annotation;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
+import javax.validation.constraints.Pattern;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -13,17 +14,13 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/**
- * The annotated element's value must not be infinite or NaN.
- * {@code null} elements are considered valid.
- * Accepts {@link Float} and {@link Double}.
- */
-@Documented
 @Target({ANNOTATION_TYPE, FIELD, PARAMETER, METHOD, CONSTRUCTOR})
 @Retention(RUNTIME)
-@Constraint(validatedBy = {FiniteDoubleValidator.class, FiniteFloatValidator.class})
-public @interface Finite {
-    String message() default "may not be infinite or NaN";
+@Documented
+@Pattern(regexp = "[A-Z0-9]{8}")
+@Constraint(validatedBy = {})
+public @interface ExforSubent {
+    String message() default "is not an exfor subent number";
     
     Class<?>[] groups() default {};
     

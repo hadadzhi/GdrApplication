@@ -9,10 +9,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.hateoas.Identifiable;
 import org.springframework.hateoas.core.Relation;
 import ru.cdfe.gdr.constant.Relations;
+import ru.cdfe.gdr.validation.annotation.ExforSubent;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class Record implements Identifiable<String> {
     private BigInteger version;
     
     @NotEmpty
-    @Pattern(regexp = "[A-Z0-9]{8}")
+    @ExforSubent
     private String exforNumber;
     
     @Valid

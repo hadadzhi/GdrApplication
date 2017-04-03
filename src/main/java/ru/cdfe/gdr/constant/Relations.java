@@ -20,4 +20,5 @@ public final class Relations {
     public static final String USERS = "users";
     public static final String AUTHORITIES = "authorities";
     public static final String CURRENT_USER = "currentUser";
+    public static final String RECORDS_SEARCH = "searchRecords";
 }

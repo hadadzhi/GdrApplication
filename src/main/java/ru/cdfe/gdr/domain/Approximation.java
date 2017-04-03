@@ -3,7 +3,7 @@ package ru.cdfe.gdr.domain;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
-import ru.cdfe.gdr.validation.Finite;
+import ru.cdfe.gdr.validation.annotation.Finite;
 
 import javax.validation.Valid;
 import java.util.List;

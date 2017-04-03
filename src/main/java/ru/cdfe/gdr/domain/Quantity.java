@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotBlank;
-import ru.cdfe.gdr.validation.Finite;
+import ru.cdfe.gdr.validation.annotation.Finite;
 
 @Data
 @NoArgsConstructor

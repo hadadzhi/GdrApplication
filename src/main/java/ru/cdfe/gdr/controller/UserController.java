@@ -64,7 +64,7 @@ public class UserController {
         final PagedResources<Resource<User>> users = assembler.toResource(
                 userRepository.findAll(pageable),
                 user -> new Resource<>(user, entityLinks.linkForSingleResource(user).withSelfRel()));
-        linkService.fixSelfLink(users, pageable, entityLinks.linkFor(User.class));
+        linkService.fixPaginatedSelfLink(users, pageable, entityLinks.linkFor(User.class));
         return users;
     }
     
@@ -87,7 +87,9 @@ public class UserController {
     
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void put(@PathVariable String id, @RequestBody @Validated User user) {
+    public void put(@PathVariable String id,
+                    @RequestBody @Validated User user) {
+        
         final User existingUser = userRepository.findOne(id);
         
         if (existingUser == null) {
