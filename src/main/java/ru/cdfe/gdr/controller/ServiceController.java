@@ -42,7 +42,7 @@ public class ServiceController {
     @GetMapping(Relations.EXFOR)
     @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).EXFOR)")
     public Resource<Record>
-    exfor(@RequestParam(name = Parameters.EXFOR_NUMBER) String exforNumber,
+    exfor(@RequestParam(name = Parameters.SUBENT) String exforNumber,
           @RequestParam(name = Parameters.ENERGY_COL, defaultValue = "0") int enCol,
           @RequestParam(name = Parameters.CROSS_SECTION_COL, defaultValue = "1") int csCol,
           @RequestParam(name = Parameters.CROSS_SECTION_ERR_COL, defaultValue = "2") int csErrCol) {

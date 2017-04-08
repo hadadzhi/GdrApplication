@@ -2,6 +2,9 @@ package ru.cdfe.gdr.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,16 +14,31 @@ import ru.cdfe.gdr.domain.security.Authority;
 import ru.cdfe.gdr.domain.security.User;
 import ru.cdfe.gdr.service.LinkService;
 
+import java.net.URI;
+
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
-@RequestMapping
+@RequestMapping("/")
 public class HomeController {
+    private static final URI HAL_HOME = URI.create("/hal-browser/browser.html");
+    private static final URI FRONTEND_HOME = URI.create("/frontend/index.html");
+    
     private final LinkService linkService;
     
     @Autowired
     public HomeController(LinkService linkService) {
         this.linkService = linkService;
+    }
+    
+    @GetMapping(path = "hal-browser", produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity hal() {
+        return ResponseEntity.status(HttpStatus.FOUND).location(HAL_HOME).build();
+    }
+    
+    @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity frontend() {
+        return ResponseEntity.status(HttpStatus.FOUND).location(FRONTEND_HOME).build();
     }
     
     @GetMapping

@@ -7,6 +7,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.List;
@@ -30,5 +31,17 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer.setUseSuffixPatternMatch(false);
+    }
+    
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/frontend/**")
+                .addResourceLocations("classpath:/static/frontend/");
+        
+        registry.addResourceHandler("/hal-browser/**")
+                .addResourceLocations("classpath:/static/hal-browser/");
+        
+        registry.addResourceHandler("**/favicon.ico")
+                .addResourceLocations("classpath:/favicon.ico");
     }
 }

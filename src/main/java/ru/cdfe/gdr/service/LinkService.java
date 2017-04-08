@@ -3,6 +3,7 @@ package ru.cdfe.gdr.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.HateoasPageableHandlerMethodArgumentResolver;
+import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkBuilder;
 import org.springframework.hateoas.PagedResources;
@@ -14,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import ru.cdfe.gdr.constant.Parameters;
 import ru.cdfe.gdr.constant.Relations;
 import ru.cdfe.gdr.controller.ServiceController;
+import ru.cdfe.gdr.domain.Record;
 
 import java.net.URI;
 
@@ -23,10 +25,14 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Service
 public class LinkService {
     private final HateoasPageableHandlerMethodArgumentResolver resolver;
+    private final EntityLinks entityLinks;
     
     @Autowired
-    public LinkService(HateoasPageableHandlerMethodArgumentResolver resolver) {
+    public LinkService(HateoasPageableHandlerMethodArgumentResolver resolver,
+                       EntityLinks entityLinks) {
+        
         this.resolver = resolver;
+        this.entityLinks = entityLinks;
     }
     
     public Link paginatedLink(LinkBuilder linkBuilder, String rel, TemplateVariable... additionalVariables) {
@@ -50,10 +56,15 @@ public class LinkService {
         return linkTo(methodOn(ServiceController.class).fit(null)).withRel(Relations.FITTER);
     }
     
+    public Link recordsLink() {
+        return paginatedLink(entityLinks.linkFor(Record.class), Relations.RECORDS,
+                new TemplateVariable(Parameters.SUBENT, TemplateVariable.VariableType.REQUEST_PARAM));
+    }
+    
     public Link exforLink() {
         final String uri = linkTo(ServiceController.class).slash(Relations.EXFOR).toUri().toString();
         final UriTemplate template = new UriTemplate(uri)
-                .with(Parameters.EXFOR_NUMBER, TemplateVariable.VariableType.REQUEST_PARAM)
+                .with(Parameters.SUBENT, TemplateVariable.VariableType.REQUEST_PARAM)
                 .with(Parameters.ENERGY_COL, TemplateVariable.VariableType.REQUEST_PARAM)
                 .with(Parameters.CROSS_SECTION_COL, TemplateVariable.VariableType.REQUEST_PARAM)
                 .with(Parameters.CROSS_SECTION_ERR_COL, TemplateVariable.VariableType.REQUEST_PARAM);

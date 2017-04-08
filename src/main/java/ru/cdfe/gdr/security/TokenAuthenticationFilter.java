@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.cdfe.gdr.GdrSecurityProperties;
 import ru.cdfe.gdr.constant.SecurityConstants;
 
 import javax.servlet.FilterChain;
@@ -19,17 +19,21 @@ import java.time.Instant;
 
 /**
  * Checks the incoming request headers for an authentication token and,
- * if it is present and valid, puts the {@link Authentication} associated with
+ * if it is present and valid, puts the {@link TokenAuthentication} associated with
  * that token to the {@link SecurityContextHolder}.
  */
 @Component
 @Configuration
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
-    private final AuthenticationInfoRepository authenticationInfoRepository;
+    private final TokenAuthenticationRepository tokenAuthenticationRepository;
+    private final GdrSecurityProperties securityProperties;
     
     @Autowired
-    public TokenAuthenticationFilter(AuthenticationInfoRepository authenticationInfoRepository) {
-        this.authenticationInfoRepository = authenticationInfoRepository;
+    public TokenAuthenticationFilter(TokenAuthenticationRepository tokenAuthenticationRepository,
+                                     GdrSecurityProperties securityProperties) {
+        
+        this.tokenAuthenticationRepository = tokenAuthenticationRepository;
+        this.securityProperties = securityProperties;
     }
     
     @Override
@@ -38,29 +42,25 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
         
-        try {
-            if (SecurityContextHolder.getContext().getAuthentication() != null) {
-                return; // Do nothing if already authenticated through Spring Security
-            }
-            
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
             final String token = request.getHeader(SecurityConstants.AUTH_HEADER_NAME);
             if (token != null) {
-                final AuthenticationInfo authInfo = authenticationInfoRepository.get(token);
-                if (authInfo != null) {
-                    final Instant now = Instant.now();
-                    if (authInfo.getExpiry().isBefore(now)) {
-                        authenticationInfoRepository.remove(token);
+                final TokenAuthentication auth = tokenAuthenticationRepository.get(token);
+                if (auth != null) {
+                    if (!auth.isAuthenticated()) {
+                        tokenAuthenticationRepository.remove(token);
                     } else {
-                        final Authentication auth = authInfo.getAuthentication();
-                        final Instant expiry = now.plus(SecurityConstants.AUTH_SESSION_LENGTH);
-                        authenticationInfoRepository.put(token, new AuthenticationInfo(auth, expiry));
-                        SecurityContextHolder.getContext().setAuthentication(auth);
+                        if (auth.getRemoteAddr().equals(request.getRemoteAddr())) {
+                            tokenAuthenticationRepository.put(new TokenAuthentication(auth,
+                                    Instant.now().plus(securityProperties.getTokenExpiry())));
+                            SecurityContextHolder.getContext().setAuthentication(auth);
+                        }
                     }
                 }
             }
-        } finally {
-            filterChain.doFilter(request, response);
         }
+        
+        filterChain.doFilter(request, response);
     }
     
     /**
@@ -68,8 +68,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
      * properly registered through Spring Security configuration.
      */
     @Bean
-    protected FilterRegistrationBean filterRegistrationBean(TokenAuthenticationFilter f) {
-        final FilterRegistrationBean frb = new FilterRegistrationBean(f);
+    protected FilterRegistrationBean<TokenAuthenticationFilter>
+    filterRegistrationBean(TokenAuthenticationFilter f) {
+        final FilterRegistrationBean<TokenAuthenticationFilter> frb = new FilterRegistrationBean<>(f);
         frb.setEnabled(false);
         return frb;
     }

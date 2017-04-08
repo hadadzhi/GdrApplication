@@ -8,7 +8,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.hateoas.UriTemplate;
@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import ru.cdfe.gdr.constant.CommandLineOptions;
 import ru.cdfe.gdr.constant.CurveTypes;
-import ru.cdfe.gdr.constant.SecurityConstants;
 import ru.cdfe.gdr.domain.Approximation;
 import ru.cdfe.gdr.domain.Curve;
 import ru.cdfe.gdr.domain.DataPoint;
@@ -39,6 +38,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -72,16 +72,19 @@ public class GdrApplication {
     }
     
     @Bean
-    public ApplicationRunner defaultUserCreator(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public ApplicationRunner defaultUserCreator(UserRepository userRepository,
+                                                PasswordEncoder passwordEncoder,
+                                                GdrSecurityProperties securityProperties) {
         return args -> {
             if (userRepository.count() == 0 || args.getOptionValues(CommandLineOptions.CREATE_DEFAULT_USER) != null) {
                 User defaultUser = new User();
                 
-                defaultUser.setName(SecurityConstants.DEFAULT_USER_NAME);
-                defaultUser.setSecret(passwordEncoder.encode(SecurityConstants.DEFAULT_USER_SECRET));
+                defaultUser.setName(securityProperties.getDefaultUserName());
+                defaultUser.setSecret(passwordEncoder.encode(securityProperties.getDefaultUserSecret()));
                 defaultUser.setAuthorities(Arrays.stream(Authority.values()).collect(toSet()));
+                defaultUser.setAllowedAddresses(Stream.of("::1", "127.0.0.1").collect(toSet()));
                 
-                final User existingUser = userRepository.findByName(SecurityConstants.DEFAULT_USER_NAME);
+                final User existingUser = userRepository.findByName(defaultUser.getName());
                 if (existingUser != null) {
                     log.warn("DefaultUserCreator: default user already exists, overwriting");
                     
@@ -94,7 +97,7 @@ public class GdrApplication {
                 }
                 
                 log.info("DefaultUserCreator: created default user: {}, with password: {}",
-                        defaultUser, SecurityConstants.DEFAULT_USER_SECRET);
+                        defaultUser, securityProperties.getDefaultUserSecret());
             }
         };
     }

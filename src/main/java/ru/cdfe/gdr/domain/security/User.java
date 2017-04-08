@@ -17,6 +17,8 @@ import javax.validation.constraints.Pattern;
 import java.math.BigInteger;
 import java.util.Set;
 
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
+
 @Document
 @Data
 @ToString(exclude = "secret")
@@ -35,10 +37,13 @@ public class User implements Identifiable<String> {
     @Indexed(unique = true)
     private String name;
     
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Pattern(regexp = ".{8,128}")
+    @JsonProperty(access = WRITE_ONLY)
+    @Pattern(regexp = ".{8,256}")
     private String secret;
     
     @NotEmpty
     private Set<Authority> authorities;
+    
+    @NotEmpty
+    private Set<String> allowedAddresses;
 }

@@ -35,8 +35,6 @@ import ru.cdfe.gdr.exception.RecordNotFound;
 import ru.cdfe.gdr.repository.RecordRepository;
 import ru.cdfe.gdr.service.LinkService;
 
-import java.util.Optional;
-
 @Slf4j
 @RestController
 @ExposesResourceFor(Record.class)
@@ -64,11 +62,11 @@ public class RecordController {
            Pageable pageable,
            PagedResourcesAssembler<Record> assembler) {
         
-        log.debug(subent != null ? "GET: records for subent " + subent : "GET: all records");
+        log.debug(subent != null ? "GET: records for subent regex /" + subent + "/" : "GET: all records");
         
         final PagedResources<Resource<RecordExcerpt>> resources = assembler.toResource(
                 subent != null ?
-                        recordRepository.findByExforNumber(subent, pageable) :
+                        recordRepository.findBySubentRegex(subent, pageable) :
                         recordRepository.findAll(pageable),
                 record -> new Resource<>(new RecordExcerpt(record),
                         entityLinks.linkForSingleResource(record).withRel(Relations.RECORD)));
@@ -89,7 +87,7 @@ public class RecordController {
     @PreAuthorize("permitAll()")
     public Resource<Record> get(@PathVariable String id) {
         log.debug("GET: record: {}", id);
-        final Record record = Optional.ofNullable(recordRepository.findOne(id)).orElseThrow(RecordNotFound::new);
+        final Record record = recordRepository.findOne(id).orElseThrow(RecordNotFound::new);
         return new Resource<>(record, entityLinks.linkForSingleResource(record).withSelfRel());
     }
     
@@ -109,7 +107,7 @@ public class RecordController {
     public void put(@PathVariable String id,
                     @RequestBody @Validated Record record) {
         
-        final Record existingRecord = recordRepository.findOne(id);
+        final Record existingRecord = recordRepository.findOne(id).orElse(null);
         
         if (existingRecord == null) {
             log.debug("PUT: record not found: {}", id);

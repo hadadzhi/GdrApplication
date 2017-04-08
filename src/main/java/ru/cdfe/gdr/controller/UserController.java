@@ -33,8 +33,6 @@ import ru.cdfe.gdr.exception.UserNotFound;
 import ru.cdfe.gdr.repository.UserRepository;
 import ru.cdfe.gdr.service.LinkService;
 
-import java.util.Optional;
-
 @Slf4j
 @RestController
 @ExposesResourceFor(User.class)
@@ -71,7 +69,7 @@ public class UserController {
     @GetMapping("{id}")
     public Resource<User> get(@PathVariable String id) {
         log.debug("GET: user: {}", id);
-        final User user = Optional.ofNullable(userRepository.findOne(id)).orElseThrow(UserNotFound::new);
+        final User user = userRepository.findOne(id).orElseThrow(UserNotFound::new);
         return new Resource<>(user, entityLinks.linkForSingleResource(user).withSelfRel());
     }
     
@@ -90,7 +88,7 @@ public class UserController {
     public void put(@PathVariable String id,
                     @RequestBody @Validated User user) {
         
-        final User existingUser = userRepository.findOne(id);
+        final User existingUser = userRepository.findOne(id).orElse(null);
         
         if (existingUser == null) {
             log.debug("PUT: user not found: {}", id);

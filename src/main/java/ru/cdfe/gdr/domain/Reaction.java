@@ -21,4 +21,11 @@ public class Reaction {
     
     @NotBlank
     private String outgoing;
+    
+    @Override
+    public String toString() {
+        return String.format("(%d-%d(%s,%s)%d-%d)",
+                target.getCharge(), target.getMass(), incident, outgoing,
+                product.getCharge(), product.getMass());
+    }
 }

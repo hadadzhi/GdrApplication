@@ -8,6 +8,5 @@ public final class Parameters {
     public static final String ENERGY_COL = "en_col";
     public static final String CROSS_SECTION_COL = "cs_col";
     public static final String CROSS_SECTION_ERR_COL = "cs_err_col";
-    public static final String EXFOR_NUMBER = "subent";
     public static final String SUBENT = "subent";
 }
