@@ -1,36 +1,46 @@
 $(function () {
+    // Functions
+    function row() {
+        return $("<tr></tr>");
+    }
+    
+    function cell(data) {
+        return $("<td></td>").append(data);
+    }
+    
+    function filterSubent(event) {
+        notImplemented(event);
+    }
+    
+    function notImplemented(event) {
+        alert("Not Implemented");
+        event.preventDefault();
+    }
+    // End of functions
+    
+    $('[data-toggle="tooltip"]').tooltip(); // Init tooltips
+    
     $(window).on("beforeunload", function () {
         return "Please confirm exiting the application.";
     });
     
-    var excerpts;
-    $.get("/repository/records", function(res) {
-        excerpts = res['_embedded']['gdr:recordExcerpts'];
-        $("#jsGrid").jsGrid({
-            height: "100%",
-            width: "100%",
-        
-            filtering: false,
-            editing: false,
-            sorting: false,
-            paging: false,
-            autoload: false,
-        
-            pageSize: 15,
-            pageButtonCount: 5,
-        
-            deleteConfirm: "",
-        
-            data: excerpts,
-            
-            fields: [
-                {name: "exforNumber"},
-                {name: "reactionString"},
-                {name: "energyAtMaxCrossSection"},
-                {name: "maxCrossSection"},
-                {name: "fullWidthAtHalfMaximum"},
-                {name: "chiSquaredReduced"}
-            ]
-        });
-    });
+    $("#subent-btn").click(filterSubent);
+    $("#subent-input").change(filterSubent);
+    
+    const $paging = $("#paging");
+    $paging.click(notImplemented);
+    $paging.text("X..Y of Z");
+    
+    $("#first").click(notImplemented);
+    $("#last").click(notImplemented);
+    $("#prev").click(notImplemented);
+    $("#next").click(notImplemented);
+    
+    for (var i = 0; i < 50; ++i) {
+        var $tr = row();
+        for (var j = 0; j < 4; ++j) {
+            $tr.append(cell(i.toString() + j.toString()));
+        }
+        $("#records-table-body").append($tr);
+    }
 });

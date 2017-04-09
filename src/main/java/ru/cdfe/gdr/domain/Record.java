@@ -88,7 +88,7 @@ public class Record implements Identifiable<String> {
         setFullWidthAtHalfMaximum(curve.getFullWidthAtHalfMaximum());
         setChiSquaredReduced(approximation.getChiSquaredReduced());
         
-        setReactionString(getReactions().stream().map(Reaction::toString).collect(joining("+")));
+        setReactionString(getReactions().stream().map(Reaction::toString).collect(joining(" + ")));
     }
     
     @Component
