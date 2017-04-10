@@ -78,16 +78,16 @@ public class AuthenticationController {
             if (!user.getAllowedAddresses().isEmpty()) {
                 final Set<InetAddress> userAddresses = new HashSet<>();
                 
-                for (final String a : user.getAllowedAddresses()) {
+                for (final String addr : user.getAllowedAddresses()) {
                     try {
-                        userAddresses.addAll(Arrays.asList(InetAddress.getAllByName(a)));
+                        userAddresses.addAll(Arrays.asList(InetAddress.getAllByName(addr)));
                     } catch (UnknownHostException e) {
-                        log.warn("User {} has malformed access address: {}", user.getName(), a);
+                        log.warn("User {} has malformed access address: {}", user.getName(), addr);
                     }
                 }
                 
                 if (!userAddresses.contains(InetAddress.getByName(httpRequest.getRemoteAddr()))) {
-                    throw new AuthenticationException("Access denied from " + httpRequest.getRemoteHost());
+                    throw new AuthenticationException("Access denied from " + httpRequest.getRemoteAddr());
                 }
             }
             
@@ -95,7 +95,7 @@ public class AuthenticationController {
         }
         
         log.info("Login failure: {}", authRequest.getName());
-        throw new AuthenticationException();
+        throw new AuthenticationException("Bad credentials");
     }
     
     private String logUserIn(User user, HttpServletRequest httpRequest) {
