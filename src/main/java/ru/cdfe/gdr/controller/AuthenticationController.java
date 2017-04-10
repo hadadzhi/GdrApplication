@@ -87,7 +87,7 @@ public class AuthenticationController {
                 }
                 
                 if (!userAddresses.contains(InetAddress.getByName(httpRequest.getRemoteAddr()))) {
-                    throw new AuthenticationException("Access denied from " + httpRequest.getRemoteAddr());
+                    throw new AccessDeniedException("Access denied from " + httpRequest.getRemoteAddr());
                 }
             }
             
@@ -102,10 +102,10 @@ public class AuthenticationController {
         final Instant expiry = Instant.now().plus(securityProperties.getTokenExpiry());
         final String token = generateToken();
         
-        tokenAuthenticationRepository.put(new TokenAuthentication(token,
-                user, httpRequest.getRemoteAddr(), expiry));
+        tokenAuthenticationRepository.put(new TokenAuthentication(token, user,
+                httpRequest.getRemoteAddr(), expiry));
         
-        log.info("Login success: {}@{}", user.getName(), httpRequest.getRemoteHost());
+        log.info("Login success: {}@{}", user.getName(), httpRequest.getRemoteAddr());
         return token;
     }
     
