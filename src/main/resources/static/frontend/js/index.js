@@ -38,8 +38,8 @@ $(function () {
     
     for (var i = 0; i < 50; ++i) {
         var $tr = row();
-        for (var j = 0; j < 4; ++j) {
-            $tr.append(cell(i.toString() + j.toString()));
+        for (var j = 0; j < 9; ++j) {
+            $tr.append(cell(Math.random().toString()));
         }
         $("#records-table-body").append($tr);
     }
