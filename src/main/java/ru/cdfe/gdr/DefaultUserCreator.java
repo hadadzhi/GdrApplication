@@ -33,8 +33,7 @@ class DefaultUserCreator implements ApplicationRunner {
     
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if (userRepository.count() == 0 || args.getOptionValues(CommandLineOptions.CREATE_DEFAULT_USER) !=
-                null) {
+        if (userRepository.count() == 0 || args.getOptionValues(CommandLineOptions.CREATE_DEFAULT_USER) != null) {
             User defaultUser = new User();
     
             defaultUser.setName(securityProperties.getDefaultUserName());

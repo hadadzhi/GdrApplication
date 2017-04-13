@@ -12,7 +12,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.hateoas.Identifiable;
 import org.springframework.hateoas.core.Relation;
 import ru.cdfe.gdr.constant.Relations;
+import ru.cdfe.gdr.validation.groups.UserCreation;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.math.BigInteger;
 import java.util.Set;
@@ -39,6 +41,7 @@ public class User implements Identifiable<String> {
     
     @JsonProperty(access = WRITE_ONLY)
     @Pattern(regexp = ".{8,256}")
+    @NotNull(groups = UserCreation.class)
     private String secret;
     
     @NotEmpty

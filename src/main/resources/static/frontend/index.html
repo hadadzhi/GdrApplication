@@ -1,147 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        
-        <meta name="description" content="Giant Dipole Resonance Main Parameters Repository">
-        <meta name="author" content="hadadzhi@gmail.com">
-        
-        <title>GDR Main Parameters Repository</title>
-        
-        <!-- Styles -->
-        <link rel="stylesheet"
-              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-              integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-              crossorigin="anonymous">
-        
-        <link rel="stylesheet"
-              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-              integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-              crossorigin="anonymous">
-        
-        <link rel="stylesheet"
-              href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css">
-        
-        <link rel="stylesheet"
-              href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css">
-        
-        <link href="css/index.css" rel="stylesheet">
-    </head>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <body>
-        <!-- Top navigation bar -->
-        <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a id="brand" class="navbar-brand" data-toggle="modal" data-target="#dialog-about" href="#brand">
-                        <strong data-toggle="tooltip" data-placement="right" title="Giant Dipole Resonance">
-                            GDR
-                        </strong>
-                        Main Parameters Repository
-                    </a>
-                </div>
-                <div id="navbar">
-                    <form class="navbar-form navbar-left">
-                        <div class="input-group">
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="EXFOR Subent (regex)"
-                                   id="subent-input">
-                            <div class="input-group-btn">
-                                <button class="btn btn-default"
-                                        id="subent-btn">
-                                    <i class="glyphicon glyphicon-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                    
-                    <ul id="navbar-left" class="nav navbar-nav">
-                        <!-- Paging -->
-                        <li><a id="first" href="#first"><i class="glyphicon glyphicon-fast-backward"></i></a></li>
-                        <li><a id="prev" href="#prev"><i class="glyphicon glyphicon-step-backward"></i></a></li>
-                        
-                        <li><a id="paging" href="#paging">Paging</a></li>
-                        
-                        <li><a id="next" href="#next"><i class="glyphicon glyphicon-step-forward"></i></a></li>
-                        <li><a id="last" href="#last"><i class="glyphicon glyphicon-fast-forward"></i></a></li>
-                    </ul>
-                    
-                    <ul id="navbar-right" class="nav navbar-nav navbar-right">
-                        <li><a href="/hal-browser" target="_blank">API Browser</a></li>
-                        <li><a id="login" href="#login" data-toggle="modal" data-target="#dialog-login">Log In</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        
-        <!-- About dialog -->
-        <div class="modal fade" id="dialog-about" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">About</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>Giant Dipole Resonance Main Parameters Repository</p>
-                        <a href="http://cdfe.sinp.msu.ru" target="_blank">CDFE, 2017</a>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
+    <meta name="description" content="Giant Dipole Resonance Main Parameters Repository">
+    <meta name="author" content="hadadzhi@gmail.com">
+    
+    <title>GDR Main Parameters Repository</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous">
+    
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css">
+    
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css">
+    
+    <link href="css/index.css" rel="stylesheet">
+  </head>
+  
+  <body>
+    <!-- Top navigation bar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a id="brand" class="navbar-brand" data-toggle="modal" data-target="#dialog-about" href="#brand">
+            <strong data-toggle="tooltip" data-placement="right" title="Giant Dipole Resonance">
+              GDR
+            </strong> Main Parameters Repository
+          </a>
         </div>
-        
-        <!-- Login dialog -->
-        <div class="modal fade" id="dialog-login" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Log In</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>Not Implemented</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Log In</button>
-                    </div>
-                </div>
-            </div>
+        <div id="navbar">
+          <!--<form class="navbar-form">-->
+            <!--<div class="input-group">-->
+              <!--<input type="text" class="form-control" placeholder="EXFOR Subent (regex)" id="subent-input">-->
+              <!--<div class="input-group-btn">-->
+                <!--<button class="btn btn-default" id="subent-btn">-->
+                  <!--<i class="glyphicon glyphicon-search"></i>-->
+                <!--</button>-->
+              <!--</div>-->
+            <!--</div>-->
+          <!--</form>-->
+          
+          <ul class="nav navbar-nav">
+            <!-- Paging -->
+            <li><a id="first" href="#first"><i class="glyphicon glyphicon-fast-backward"></i></a></li>
+            <li><a id="prev" href="#prev"><i class="glyphicon glyphicon-step-backward"></i></a></li>
+            
+            <li><a id="paging" href="#paging">Paging</a></li>
+            
+            <li><a id="next" href="#next"><i class="glyphicon glyphicon-step-forward"></i></a></li>
+            <li><a id="last" href="#last"><i class="glyphicon glyphicon-fast-forward"></i></a></li>
+          </ul>
+          
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/hal-browser" target="_blank">API Browser</a></li>
+            <li><a id="login" href="#login" data-toggle="modal" data-target="#dialog-login">Log In</a></li>
+          </ul>
         </div>
-        
-        <!-- Data grid -->
-        <div id="records-table-wrapper" class="table-responsive">
-            <table id="records-table" class="table table-striped table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>Exfor subent</th>
-                        <th>Reaction string</th>
-                        <th>E max</th>
-                        <th>Sigma max</th>
-                        <th>FWHM</th>
-                        <th>Chi ^ 2</th>
-                        <th>Integrated cross section</th>
-                        <th>First moment</th>
-                        <th>Center of gravity</th>
-                    </tr>
-                </thead>
-                <tbody id="records-table-body"></tbody>
-            </table>
+      </div>
+    </nav>
+    
+    <!-- About dialog -->
+    <div class="modal fade" id="dialog-about" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">About</h4>
+          </div>
+          <div class="modal-body">
+            <p>Giant Dipole Resonance Main Parameters Repository</p>
+            <a href="http://cdfe.sinp.msu.ru" target="_blank">CDFE, 2017</a>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
         </div>
-        
-        <!-- Scripts -->
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js"
-                integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-                crossorigin="anonymous"></script>
-        
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-                crossorigin="anonymous"></script>
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
-        
-        <script src="js/index.js"></script>
-    </body>
+      </div>
+    </div>
+    
+    <!-- Login dialog -->
+    <div class="modal fade" id="dialog-login" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Log In</h4>
+          </div>
+          <div class="modal-body">
+            <p>Not Implemented</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Log In</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Data grid -->
+    <div id="records-table-wrapper" class="table-responsive">
+      <table id="records-table" class="table table-bordered table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>Exfor subent</th>
+            <th>Reaction string</th>
+            <th>E max</th>
+            <th>Sigma max</th>
+            <th>FWHM</th>
+            <th>Chi ^ 2</th>
+            <th>Integrated cross section</th>
+            <th>First moment</th>
+            <th>Center of gravity</th>
+          </tr>
+        </thead>
+        <tbody id="records-table-body"></tbody>
+      </table>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
+    
+    <script src="js/index.js"></script>
+  </body>
 </html>

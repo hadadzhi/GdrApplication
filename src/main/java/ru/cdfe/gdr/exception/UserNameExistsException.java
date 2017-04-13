@@ -12,6 +12,7 @@ public class UserNameExistsException extends GdrException {
     }
     
     public UserNameExistsException() {
+        this("A user with the same name already exists");
     }
     
     public UserNameExistsException(String message) {

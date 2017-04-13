@@ -27,11 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.constant.Relations;
 import ru.cdfe.gdr.domain.security.User;
 import ru.cdfe.gdr.exception.OptimisticLockingException;
-import ru.cdfe.gdr.exception.SecretNotSpecifiedException;
 import ru.cdfe.gdr.exception.UserNameExistsException;
 import ru.cdfe.gdr.exception.UserNotFound;
 import ru.cdfe.gdr.repository.UserRepository;
 import ru.cdfe.gdr.service.LinkService;
+import ru.cdfe.gdr.validation.groups.UserCreation;
+
+import javax.validation.groups.Default;
 
 @Slf4j
 @RestController
@@ -118,17 +120,13 @@ public class UserController {
     }
     
     @PostMapping
-    public ResponseEntity post(@RequestBody @Validated User user) {
-        if (user.getSecret() == null) {
-            log.debug("POST: secret not specified: {}", user);
-            throw new SecretNotSpecifiedException();
-        }
-        
-        user.setSecret(passwordEncoder.encode(user.getSecret()));
-        
+    public ResponseEntity post(@RequestBody @Validated({Default.class, UserCreation.class}) User user) {
         try {
             log.debug("POST: inserting user: {}", user);
+            
+            user.setSecret(passwordEncoder.encode(user.getSecret()));
             user = userRepository.insert(user);
+            
             log.debug("POST: inserted user:  {}", user);
         } catch (DuplicateKeyException e) {
             log.debug("POST: duplicate key: ", e);
