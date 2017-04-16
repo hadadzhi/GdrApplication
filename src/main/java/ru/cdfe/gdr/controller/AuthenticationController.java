@@ -105,7 +105,7 @@ public class AuthenticationController {
         tokenAuthenticationRepository.put(new TokenAuthentication(token, user,
                 httpRequest.getRemoteAddr(), expiry));
         
-        log.info("Login success: {}@{}", user.getName(), httpRequest.getRemoteAddr());
+        log.info("Login success: {}@{}: {}", user.getName(), httpRequest.getRemoteAddr(), user);
         return token;
     }
     
@@ -161,7 +161,7 @@ public class AuthenticationController {
         }
         
         logout(auth);
-        return new AuthenticationResponse(logUserIn(user, request));
+        return new AuthenticationResponse(logUserIn(editedUser, request));
     }
     
     private String generateToken() {

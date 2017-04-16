@@ -24,7 +24,7 @@ public enum Authority implements GrantedAuthority {
     private String description;
     
     Authority(String description) {
-        this.name = super.toString();
+        this.name = name();
         this.description = description;
     }
     
@@ -39,6 +39,6 @@ public enum Authority implements GrantedAuthority {
     @Override
     @JsonIgnore
     public String getAuthority() {
-        return super.toString();
+        return name;
     }
 }
