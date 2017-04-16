@@ -3,9 +3,14 @@ package ru.cdfe.gdr;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 import ru.cdfe.gdr.constant.SecurityConstants;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -21,12 +26,14 @@ public class GdrSecurityProperties {
     private Duration tokenExpiry = SecurityConstants.AUTH_SESSION_LENGTH;
     
     public void setTokenExpiry(long minutes) {
+        Assert.isTrue(minutes > 0, "Value must be a positive number"); // Can't use validation on the method parameter
         tokenExpiry = Duration.of(minutes, ChronoUnit.MINUTES);
     }
     
     /**
      * Length of the authentication token in bytes.
      */
+    @Min(4)
     private int tokenLength = SecurityConstants.AUTH_TOKEN_LENGTH_BYTES;
     
     private String defaultUserName = SecurityConstants.DEFAULT_USER_NAME;
