@@ -30,6 +30,5 @@ public class GdrSecurityProperties {
     private int tokenLength = SecurityConstants.AUTH_TOKEN_LENGTH_BYTES;
     
     private String defaultUserName = SecurityConstants.DEFAULT_USER_NAME;
-    
     private String defaultUserSecret = SecurityConstants.DEFAULT_USER_SECRET;
 }
