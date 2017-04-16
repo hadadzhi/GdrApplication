@@ -43,24 +43,24 @@ class DefaultUserCreator implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         if (userRepository.count() == 0 || args.containsOption(CommandLineOptions.CREATE_DEFAULT_USER)) {
             User defaultUser = new User();
-    
+            
             defaultUser.setName(securityProperties.getDefaultUserName());
             defaultUser.setSecret(passwordEncoder.encode(securityProperties.getDefaultUserSecret()));
             defaultUser.setAuthorities(Arrays.stream(Authority.values()).collect(toSet()));
             defaultUser.setAllowedAddresses(Stream.of("::1", "127.0.0.1").collect(toSet()));
-    
+            
             final User existingUser = userRepository.findByName(defaultUser.getName());
             if (existingUser != null) {
                 log.warn("Default user already exists, overwriting");
-    
+                
                 defaultUser.setId(existingUser.getId());
                 defaultUser.setVersion(existingUser.getVersion());
-    
+                
                 defaultUser = userRepository.save(defaultUser);
             } else {
                 defaultUser = userRepository.insert(defaultUser);
             }
-    
+            
             log.info("Created default user: {}, with password: {}",
                     defaultUser, securityProperties.getDefaultUserSecret());
         }
