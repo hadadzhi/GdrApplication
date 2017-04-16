@@ -2,7 +2,7 @@ package ru.cdfe.gdr.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -152,7 +152,7 @@ public class AuthenticationController {
             log.debug("Saving edited user: {}", editedUser);
             editedUser = userRepository.save(editedUser);
             log.debug("Saved edited user:  {}", editedUser);
-        } catch (DuplicateKeyException e) {
+        } catch (DataIntegrityViolationException e) {
             log.debug("Duplicate key: {}", e);
             throw new UserNameExistsException();
         } catch (OptimisticLockingFailureException e) {
@@ -161,7 +161,7 @@ public class AuthenticationController {
         }
         
         logout(auth);
-        return new AuthenticationResponse(logUserIn(editedUser, request));
+        return new AuthenticationResponse(logUserIn(user, request));
     }
     
     private String generateToken() {
