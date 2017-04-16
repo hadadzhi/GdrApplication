@@ -1,6 +1,7 @@
 package ru.cdfe.gdr;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +16,12 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
 
+/**
+ * When there are no users in the database, or when explicitly instructed to
+ * by the {@link CommandLineOptions#CREATE_DEFAULT_USER command line switch},
+ * creates a default user with all {@link Authority authorities},
+ * allowed to log in only from the same machine that the server is running on.
+ */
 @Slf4j
 @Component
 class DefaultUserCreator implements ApplicationRunner {
@@ -22,6 +29,7 @@ class DefaultUserCreator implements ApplicationRunner {
     private final GdrSecurityProperties securityProperties;
     private final PasswordEncoder passwordEncoder;
     
+    @Autowired
     public DefaultUserCreator(UserRepository userRepository,
                               GdrSecurityProperties securityProperties,
                               PasswordEncoder passwordEncoder) {
@@ -33,7 +41,7 @@ class DefaultUserCreator implements ApplicationRunner {
     
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if (userRepository.count() == 0 || args.getOptionValues(CommandLineOptions.CREATE_DEFAULT_USER) != null) {
+        if (userRepository.count() == 0 || args.containsOption(CommandLineOptions.CREATE_DEFAULT_USER)) {
             User defaultUser = new User();
     
             defaultUser.setName(securityProperties.getDefaultUserName());

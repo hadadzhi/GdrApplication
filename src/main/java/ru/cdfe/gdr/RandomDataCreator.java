@@ -1,10 +1,12 @@
 package ru.cdfe.gdr;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import ru.cdfe.gdr.constant.CommandLineOptions;
 import ru.cdfe.gdr.constant.CurveTypes;
 import ru.cdfe.gdr.domain.Approximation;
 import ru.cdfe.gdr.domain.Curve;
@@ -23,18 +25,28 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
+/**
+ * When instructed to by the {@link CommandLineOptions#CREATE_RANDOM_DATA command line switch},
+ * replaces all records with randomly generated dummies.
+ */
 @Slf4j
-@Profile("randomData")
 @Component
 class RandomDataCreator implements ApplicationRunner {
     private final RecordRepository recordRepository;
     
+    @Autowired
     public RandomDataCreator(RecordRepository recordRepository) {
         this.recordRepository = recordRepository;
     }
     
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        if (!args.containsOption(CommandLineOptions.CREATE_RANDOM_DATA)) {
+            return;
+        }
+
+        log.warn("WARNING: replacing all records with randomly generated data");
+        
         recordRepository.deleteAll();
         IntStream.range(0, 1000).parallel().forEach(value -> {
             final Random random = ThreadLocalRandom.current();
