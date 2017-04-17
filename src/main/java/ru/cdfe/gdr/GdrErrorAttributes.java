@@ -17,7 +17,10 @@ public class GdrErrorAttributes extends DefaultErrorAttributes {
         final Map<String, Object> errorAttributes = super.getErrorAttributes(requestAttributes, includeStackTrace);
         final Throwable ex = getError(requestAttributes);
         
-        errorAttributes.put("message", ex.getMessage());
+        if (ex != null) {
+            errorAttributes.put("message", ex.getMessage());
+        }
+        
         errorAttributes.compute("code", (k, v) -> {
             if (ex instanceof GdrException) {
                 return GdrException.class.cast(ex).getErrorCode();
