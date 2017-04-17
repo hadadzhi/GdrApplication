@@ -82,8 +82,12 @@ public class ExforService {
         private final int crossSectionColumn;
         private final int crossSectionErrorColumn;
         
-        private DataRetriever(JdbcTemplate jdbc, String subEntNumber, int energyColumn, int crossSectionColumn, int
-                crossSectionErrorColumn) {
+        private DataRetriever(JdbcTemplate jdbc,
+                              String subEntNumber,
+                              int energyColumn,
+                              int crossSectionColumn,
+                              int crossSectionErrorColumn) {
+            
             this.jdbc = jdbc;
             this.subEntNumber = subEntNumber;
             this.energyColumn = energyColumn;
@@ -133,17 +137,23 @@ public class ExforService {
         }
         
         private void postProcessData(List<DataPoint> data) {
-            exforInterpolate(i -> data.get(i).getEnergy().getValue(),
+            exforInterpolate(
+                    i -> data.get(i).getEnergy().getValue(),
                     (i, v) -> data.get(i).getEnergy().setValue(v),
-                    data.size());
+                    data.size()
+            );
             
-            exforInterpolate(i -> data.get(i).getCrossSection().getValue(),
+            exforInterpolate(
+                    i -> data.get(i).getCrossSection().getValue(),
                     (i, v) -> data.get(i).getCrossSection().setValue(v),
-                    data.size());
+                    data.size()
+            );
             
-            exforInterpolate(i -> data.get(i).getCrossSection().getError(),
+            exforInterpolate(
+                    i -> data.get(i).getCrossSection().getError(),
                     (i, v) -> data.get(i).getCrossSection().setError(v),
-                    data.size());
+                    data.size()
+            );
         }
         
         private void exforInterpolate(DoubleListGetter getter, DoubleListSetter setter, int size) {
