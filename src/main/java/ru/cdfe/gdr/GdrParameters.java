@@ -56,10 +56,8 @@ public final class GdrParameters {
     private Quantity computeFirstMoment(List<DataPoint> sourceData) {
         return computeSum(
                 sourceData.size(),
-                i -> (sourceData.get(i).getCrossSection().getValue() / sourceData.get(i).getEnergy().getValue()) *
-                        energyDelta(i, sourceData),
-                i -> (energyDelta(i, sourceData) / sourceData.get(i).getEnergy().getValue()) * sourceData.get(i)
-                        .getCrossSection().getError(),
+                i -> (sourceData.get(i).getCrossSection().getValue() / sourceData.get(i).getEnergy().getValue()) * energyDelta(i, sourceData),
+                i -> (energyDelta(i, sourceData) / sourceData.get(i).getEnergy().getValue()) * sourceData.get(i).getCrossSection().getError(),
                 sourceData.get(0).getCrossSection().getDimension()
         );
     }
@@ -67,10 +65,8 @@ public final class GdrParameters {
     private Quantity computeEnergyCenter(List<DataPoint> sourceData, Quantity integratedCrossSection) {
         final Quantity actualFirstMoment = computeSum(
                 sourceData.size(),
-                i -> sourceData.get(i).getCrossSection().getValue() * sourceData.get(i).getEnergy().getValue() *
-                        energyDelta(i, sourceData),
-                i -> energyDelta(i, sourceData) * sourceData.get(i).getEnergy().getValue() * sourceData.get(i)
-                        .getCrossSection().getError(),
+                i -> sourceData.get(i).getCrossSection().getValue() * sourceData.get(i).getEnergy().getValue() * energyDelta(i, sourceData),
+                i -> energyDelta(i, sourceData) * sourceData.get(i).getEnergy().getValue() * sourceData.get(i).getCrossSection().getError(),
                 null // This is irrelevant
         );
         
@@ -79,8 +75,10 @@ public final class GdrParameters {
         double da = actualFirstMoment.getError();
         double db = integratedCrossSection.getError();
         
-        return new Quantity(a / b,
+        return new Quantity(
+                a / b,
                 Math.sqrt(Math.pow(da / b, 2) + Math.pow(a * db / (b * b), 2)),
-                sourceData.get(0).getEnergy().getDimension());
+                sourceData.get(0).getEnergy().getDimension()
+        );
     }
 }
