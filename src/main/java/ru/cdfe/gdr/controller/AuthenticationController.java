@@ -168,6 +168,6 @@ public class AuthenticationController {
         final byte[] bytes = new byte[securityProperties.getTokenLength()];
         secureRandom.nextBytes(bytes);
         final String token = Base64.getEncoder().encodeToString(bytes).replace("=", "");
-        return tokenAuthenticationRepository.get(token) != null ? generateToken() : token;
+        return tokenAuthenticationRepository.contains(token) ? generateToken() : token;
     }
 }

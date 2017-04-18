@@ -15,6 +15,7 @@ public interface TokenAuthenticationRepository {
      * Adds the specified authentication to the repository, replacing any existing one.
      * @return the previous authentication for the same token, or {@code null}
      * if there was no such authentication
+     * @throws IllegalArgumentException if {@code auth} is {@code null}
      */
     TokenAuthentication put(TokenAuthentication auth);
     
@@ -30,4 +31,10 @@ public interface TokenAuthenticationRepository {
      * @return {@code true} if the repository's content was changed as a result of this call
      */
     boolean remove(TokenAuthentication auth);
+    
+    /**
+     * Checks if the repository contains a {@link TokenAuthentication}
+     * for the specified token.
+     */
+    boolean contains(String token);
 }

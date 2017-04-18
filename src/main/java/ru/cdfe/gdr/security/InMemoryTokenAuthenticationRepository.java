@@ -12,7 +12,6 @@ public class InMemoryTokenAuthenticationRepository implements TokenAuthenticatio
     
     @Override
     public TokenAuthentication get(String token) {
-        Assert.notNull(token, "token must not be null");
         return map.get(token);
     }
     
@@ -24,13 +23,16 @@ public class InMemoryTokenAuthenticationRepository implements TokenAuthenticatio
     
     @Override
     public TokenAuthentication remove(String token) {
-        Assert.notNull(token, "token must not be null");
         return map.remove(token);
     }
     
     @Override
     public boolean remove(TokenAuthentication auth) {
-        Assert.notNull(auth, "authentication must not be null");
         return remove(auth.getToken()) != null;
+    }
+    
+    @Override
+    public boolean contains(String token) {
+        return map.containsKey(token);
     }
 }
