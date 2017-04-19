@@ -49,9 +49,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                         tokenAuthenticationRepository.remove(token);
                     } else {
                         if (auth.getRemoteAddr().equals(request.getRemoteAddr())) {
-                            tokenAuthenticationRepository.put(new TokenAuthentication(auth,
-                                    Instant.now().plus(securityProperties.getTokenExpiry())));
-                            SecurityContextHolder.getContext().setAuthentication(auth);
+                            final Instant expiry = Instant.now().plus(securityProperties.getTokenExpiry());
+                            final TokenAuthentication updatedAuth = new TokenAuthentication(auth, expiry);
+                            tokenAuthenticationRepository.put(updatedAuth);
+                            SecurityContextHolder.getContext().setAuthentication(updatedAuth);
                         }
                     }
                 }
