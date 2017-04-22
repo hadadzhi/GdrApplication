@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
 @Data
@@ -21,4 +22,10 @@ public class GdrProperties {
     @NotBlank
     @URL
     private String curieUrlTemplate;
+    
+    @Min(1)
+    private int maxPageSize;
+    
+    @Min(1)
+    private int defaultPageSize;
 }

@@ -15,10 +15,9 @@ public final class Relations {
     
     public static final String RECORD = "record";
     public static final String RECORDS = "records";
-    public static final String RECORDS_COMPACT = "recordExcerpts";
+    public static final String RECORDS_SEARCH = "searchRecords";
     
     public static final String USERS = "users";
     public static final String AUTHORITIES = "authorities";
     public static final String CURRENT_USER = "currentUser";
-    public static final String RECORDS_SEARCH = "searchRecords";
 }

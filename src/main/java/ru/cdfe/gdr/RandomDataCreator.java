@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import ru.cdfe.gdr.constant.CommandLineOptions;
 import ru.cdfe.gdr.constant.CurveTypes;
@@ -26,8 +25,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 /**
- * When instructed to by the {@link CommandLineOptions#CREATE_RANDOM_DATA command line switch},
- * replaces all records with randomly generated dummies.
+ * When instructed to by the {@link CommandLineOptions#CREATE_RANDOM_RECORDS command line switch},
+ * replaces all existing records with randomly generated dummies.
  */
 @Slf4j
 @Component
@@ -41,14 +40,22 @@ class RandomDataCreator implements ApplicationRunner {
     
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if (!args.containsOption(CommandLineOptions.CREATE_RANDOM_DATA)) {
+        if (!args.containsOption(CommandLineOptions.CREATE_RANDOM_RECORDS)) {
+            return;
+        }
+        
+        final int numberOfRecords;
+        try {
+            numberOfRecords = Integer.parseInt(args.getOptionValues(CommandLineOptions.CREATE_RANDOM_RECORDS).get(0));
+        } catch (NumberFormatException | IndexOutOfBoundsException e) {
+            log.error("Must specify the number of random records to generate");
             return;
         }
         
         log.warn("WARNING: replacing all records with randomly generated data");
         
         recordRepository.deleteAll();
-        IntStream.range(0, 1000).parallel().forEach(value -> {
+        IntStream.range(0, numberOfRecords).parallel().forEach(value -> {
             final Random random = ThreadLocalRandom.current();
             final List<DataPoint> source = new ArrayList<>();
             

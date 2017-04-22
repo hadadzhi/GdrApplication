@@ -1,6 +1,7 @@
 package ru.cdfe.gdr.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -26,6 +27,7 @@ import static java.util.stream.Collectors.joining;
 @Document
 @Data
 @Relation(collectionRelation = Relations.RECORDS)
+@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class Record implements Identifiable<String> {
     @Id
     @JsonIgnore
@@ -74,7 +76,7 @@ public class Record implements Identifiable<String> {
     private Quantity fullWidthAtHalfMaximum;
 
     @JsonProperty(access = READ_ONLY)
-    private double chiSquaredReduced;
+    private Double chiSquaredReduced;
     
     @JsonProperty(access = READ_ONLY)
     private String reactionString;

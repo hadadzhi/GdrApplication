@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.constant.Relations;
+import ru.cdfe.gdr.domain.Record;
 import ru.cdfe.gdr.domain.security.Authority;
 import ru.cdfe.gdr.domain.security.User;
 import ru.cdfe.gdr.service.LinkService;
@@ -31,7 +32,8 @@ public class RepositoryHomeController {
         final ResourceSupport links = new ResourceSupport();
         
         links.add(linkTo(RepositoryHomeController.class).withSelfRel());
-        links.add(linkService.recordsLink());
+        links.add(linkService.paginatedLink(entityLinks.linkFor(Record.class), Relations.RECORDS));
+        links.add(linkService.paginatedLink(linkTo(RecordSearchController.class), Relations.RECORDS_SEARCH));
         
         if (user != null && user.getAuthorities().contains(Authority.USERS)) {
             links.add(linkService.paginatedLink(entityLinks.linkFor(User.class), Relations.USERS));

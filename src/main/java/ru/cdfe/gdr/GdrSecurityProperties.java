@@ -7,10 +7,7 @@ import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 import ru.cdfe.gdr.constant.SecurityConstants;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 

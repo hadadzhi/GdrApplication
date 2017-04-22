@@ -60,11 +60,14 @@ public class UserController {
     
     @GetMapping
     public PagedResources<Resource<User>> getAll(Pageable pageable, PagedResourcesAssembler<User> assembler) {
-        log.debug("GET: all users");
+        log.debug("GET: page: {}", pageable);
+        
         final PagedResources<Resource<User>> users = assembler.toResource(
                 userRepository.findAll(pageable),
                 user -> new Resource<>(user, entityLinks.linkForSingleResource(user).withSelfRel()));
+        
         linkService.fixPaginatedSelfLink(users, pageable, entityLinks.linkFor(User.class));
+     
         return users;
     }
     

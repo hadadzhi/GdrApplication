@@ -1,7 +1,12 @@
 package ru.cdfe.gdr;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.HateoasPageableHandlerMethodArgumentResolver;
+import org.springframework.data.web.HateoasSortHandlerMethodArgumentResolver;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -13,14 +18,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import java.util.List;
 
 @Configuration
-@EnableEntityLinks
 @EnableWebMvc
+@EnableEntityLinks
+@EnableSpringDataWebSupport
 public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     private final MappingJackson2HttpMessageConverter jackson2HttpMessageConverter;
+    private final GdrProperties conf;
     
     @Autowired
-    public WebMvcConfigurer(MappingJackson2HttpMessageConverter jackson2HttpMessageConverter) {
+    public WebMvcConfigurer(MappingJackson2HttpMessageConverter jackson2HttpMessageConverter,
+                            GdrProperties conf) {
+        
         this.jackson2HttpMessageConverter = jackson2HttpMessageConverter;
+        this.conf = conf;
     }
     
     @Override
@@ -43,5 +53,17 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
         
         registry.addResourceHandler("**/favicon.ico")
                 .addResourceLocations("classpath:/favicon.ico");
+    }
+    
+    @Bean
+    public HateoasPageableHandlerMethodArgumentResolver
+    pageableResolver(HateoasSortHandlerMethodArgumentResolver sortResolver) {
+        final HateoasPageableHandlerMethodArgumentResolver resolver =
+                new HateoasPageableHandlerMethodArgumentResolver(sortResolver);
+        
+        resolver.setMaxPageSize(conf.getMaxPageSize());
+        resolver.setFallbackPageable(PageRequest.of(0, conf.getDefaultPageSize()));
+        
+        return resolver;
     }
 }

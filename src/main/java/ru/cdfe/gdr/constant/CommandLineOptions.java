@@ -6,5 +6,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandLineOptions {
     public static final String CREATE_DEFAULT_USER = "createDefaultUser";
-    public static final String CREATE_RANDOM_DATA = "createRandomData";
+    public static final String CREATE_RANDOM_RECORDS = "createRandomRecords";
 }
