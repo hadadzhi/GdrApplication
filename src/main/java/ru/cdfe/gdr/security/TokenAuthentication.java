@@ -6,6 +6,7 @@ import ru.cdfe.gdr.domain.security.Authority;
 import ru.cdfe.gdr.domain.security.User;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -35,6 +36,7 @@ public final class TokenAuthentication implements Authentication {
         Assert.notNull(user, NULL_ARG_MSG);
         Assert.notNull(remoteAddr, NULL_ARG_MSG);
         Assert.notNull(expiry, NULL_ARG_MSG);
+        
         this.user = user;
         this.token = token;
         this.remoteAddr = remoteAddr;
@@ -52,7 +54,7 @@ public final class TokenAuthentication implements Authentication {
     
     @Override
     public Set<Authority> getAuthorities() {
-        return user.getAuthorities();
+        return Collections.unmodifiableSet(user.getAuthorities());
     }
     
     /**

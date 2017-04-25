@@ -32,8 +32,11 @@ public class RepositoryHomeController {
         final ResourceSupport links = new ResourceSupport();
         
         links.add(linkTo(RepositoryHomeController.class).withSelfRel());
+        
         links.add(linkService.paginatedLink(entityLinks.linkFor(Record.class), Relations.RECORDS));
-        links.add(linkService.paginatedLink(linkTo(RecordSearchController.class), Relations.RECORDS_SEARCH));
+        
+        links.add(linkService.paginatedLink(linkTo(SearchController.class).slash(Relations.RECORDS_SEARCH),
+                Relations.RECORDS_SEARCH));
         
         if (user != null && user.getAuthorities().contains(Authority.USERS)) {
             links.add(linkService.paginatedLink(entityLinks.linkFor(User.class), Relations.USERS));

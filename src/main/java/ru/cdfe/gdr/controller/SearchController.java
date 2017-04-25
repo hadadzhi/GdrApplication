@@ -20,21 +20,20 @@ import ru.cdfe.gdr.service.SearchService;
 
 @Slf4j
 @RestController
-@RequestMapping(Relations.REPOSITORY + "/" + Relations.RECORDS_SEARCH)
-@PreAuthorize("permitAll()")
-public class RecordSearchController {
+@RequestMapping(Relations.REPOSITORY)
+public class SearchController {
     private final SearchService<Record> recordSearchService;
     private final EntityLinks entityLinks;
     
     @Autowired
-    public RecordSearchController(SearchService<Record> recordSearchService,
-                                  EntityLinks entityLinks) {
+    public SearchController(SearchService<Record> recordSearchService,
+                            EntityLinks entityLinks) {
         
         this.recordSearchService = recordSearchService;
         this.entityLinks = entityLinks;
     }
 
-    @PostMapping
+    @PostMapping(Relations.RECORDS_SEARCH)
     @PreAuthorize("permitAll()")
     public PagedResources<Resource<Record>> search(@RequestBody @Validated SearchRequest query,
                                                    Pageable pageable,

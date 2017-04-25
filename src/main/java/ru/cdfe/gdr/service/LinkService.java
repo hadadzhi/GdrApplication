@@ -48,7 +48,7 @@ public class LinkService {
     }
     
     public Link fitterLink() {
-        return linkTo(methodOn(ServiceController.class).fit(null)).withRel(Relations.FITTER);
+        return linkTo(ServiceController.class).slash(Relations.FITTER).withRel(Relations.FITTER);
     }
     
     public Link exforLink() {

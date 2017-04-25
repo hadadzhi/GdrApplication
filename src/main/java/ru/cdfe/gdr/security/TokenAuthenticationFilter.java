@@ -1,5 +1,6 @@
 package ru.cdfe.gdr.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ import java.time.Instant;
  * if it is present and valid, puts the {@link TokenAuthentication} associated with
  * that token to the {@link SecurityContextHolder}.
  */
+@Slf4j
 @Component
 @Configuration
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
@@ -46,6 +48,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 final TokenAuthentication auth = tokenAuthenticationRepository.get(token);
                 if (auth != null) {
                     if (!auth.isAuthenticated()) {
+                        log.debug("Removed expired authentication: {}", auth);
                         tokenAuthenticationRepository.remove(token);
                     } else {
                         if (auth.getRemoteAddr().equals(request.getRemoteAddr())) {
@@ -53,6 +56,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                             final TokenAuthentication updatedAuth = new TokenAuthentication(auth, expiry);
                             tokenAuthenticationRepository.put(updatedAuth);
                             SecurityContextHolder.getContext().setAuthentication(updatedAuth);
+                        } else {
+                            log.debug("Request address {} doesn't match the authentication: {}", request, auth);
                         }
                     }
                 }
@@ -67,9 +72,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
      * properly registered through Spring Security configuration.
      */
     @Bean
-    protected FilterRegistrationBean<TokenAuthenticationFilter>
-    filterRegistrationBean(TokenAuthenticationFilter f) {
-        final FilterRegistrationBean<TokenAuthenticationFilter> frb = new FilterRegistrationBean<>(f);
+    protected FilterRegistrationBean filterRegistrationBean(TokenAuthenticationFilter f) {
+        final FilterRegistrationBean frb = new FilterRegistrationBean<>(f);
         frb.setEnabled(false);
         return frb;
     }

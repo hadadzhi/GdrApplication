@@ -55,8 +55,7 @@ public class GdrApplication {
     }
     
     @Bean
-    public SearchService<Record>
-    recordSearchService(MongoTemplate mongo) {
+    public SearchService<Record> recordSearchService(MongoTemplate mongo) {
         return new MongoSearchService<>(Record.class, mongo);
     }
 }

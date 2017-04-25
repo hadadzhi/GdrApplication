@@ -26,7 +26,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping
+@RequestMapping("service")
 public class ServiceController {
     private final ExforService exforService;
     private final FittingService fittingService;
