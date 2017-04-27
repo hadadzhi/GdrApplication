@@ -27,14 +27,14 @@ import java.time.Instant;
 @Component
 @Configuration
 public class GdrAuthenticationFilter extends OncePerRequestFilter {
-    private final GdrAuthenticationRepository gdrAuthenticationRepository;
+    private final GdrAuthenticationStore gdrAuthenticationStore;
     private final GdrSecurityProperties securityProperties;
     
     @Autowired
-    public GdrAuthenticationFilter(GdrAuthenticationRepository gdrAuthenticationRepository,
+    public GdrAuthenticationFilter(GdrAuthenticationStore gdrAuthenticationStore,
                                    GdrSecurityProperties securityProperties) {
         
-        this.gdrAuthenticationRepository = gdrAuthenticationRepository;
+        this.gdrAuthenticationStore = gdrAuthenticationStore;
         this.securityProperties = securityProperties;
     }
     
@@ -45,16 +45,16 @@ public class GdrAuthenticationFilter extends OncePerRequestFilter {
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             final String token = request.getHeader(SecurityConstants.AUTH_HEADER_NAME);
             if (token != null) {
-                final GdrAuthenticationToken auth = gdrAuthenticationRepository.get(token);
+                final GdrAuthenticationToken auth = gdrAuthenticationStore.get(token);
                 if (auth != null) {
                     if (!auth.isAuthenticated()) {
                         log.debug("Removed expired authentication: {}", auth);
-                        gdrAuthenticationRepository.remove(token);
+                        gdrAuthenticationStore.remove(token);
                     } else {
                         if (auth.getRemoteAddr().equals(request.getRemoteAddr())) {
                             final Instant expiry = Instant.now().plus(securityProperties.getTokenExpiry());
                             final GdrAuthenticationToken updatedAuth = new GdrAuthenticationToken(auth, expiry);
-                            gdrAuthenticationRepository.put(updatedAuth);
+                            gdrAuthenticationStore.put(updatedAuth);
                             SecurityContextHolder.getContext().setAuthentication(updatedAuth);
                         } else {
                             log.debug("Request address {} doesn't match the authentication: {}", request, auth);

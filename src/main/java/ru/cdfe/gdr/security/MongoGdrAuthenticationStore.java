@@ -1,20 +1,27 @@
 package ru.cdfe.gdr.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import ru.cdfe.gdr.repository.GdrAuthenticationRepository;
 
-interface GdrAuthenticationRepositoryBean extends MongoRepository<GdrAuthenticationToken, String> {}
+import javax.annotation.PostConstruct;
 
+@Slf4j
 @Component
 @ConditionalOnProperty("gdr.security.persistent-authentication")
-public class MongoGdrAuthenticationRepository implements GdrAuthenticationRepository {
-    private final GdrAuthenticationRepositoryBean repo;
+public class MongoGdrAuthenticationStore implements GdrAuthenticationStore {
+    private final GdrAuthenticationRepository repo;
+    
+    @PostConstruct
+    private void postConstruct() {
+        log.info("Using persistent authentication store");
+    }
     
     @Autowired
-    public MongoGdrAuthenticationRepository(GdrAuthenticationRepositoryBean repo) {
+    public MongoGdrAuthenticationStore(GdrAuthenticationRepository repo) {
         this.repo = repo;
     }
     

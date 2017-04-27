@@ -13,12 +13,12 @@ import java.util.Set;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
-public class MongoSearchService<T> implements SearchService<T> {
+public class MongoTemplateSearchService<T> implements SearchService<T> {
     private final Class<T> domainObjectType;
     private final MongoTemplate mongo;
     
-    public MongoSearchService(Class<T> domainObjectType,
-                              MongoTemplate mongo) {
+    public MongoTemplateSearchService(Class<T> domainObjectType,
+                                      MongoTemplate mongo) {
         
         this.domainObjectType = domainObjectType;
         this.mongo = mongo;

@@ -19,7 +19,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import ru.cdfe.gdr.domain.Record;
 import ru.cdfe.gdr.service.SearchService;
-import ru.cdfe.gdr.service.mongo.MongoSearchService;
+import ru.cdfe.gdr.service.mongo.MongoTemplateSearchService;
 
 import javax.validation.Validator;
 
@@ -60,6 +60,6 @@ public class GdrApplication {
     
     @Bean
     public SearchService<Record> recordSearchService(MongoTemplate mongo) {
-        return new MongoSearchService<>(Record.class, mongo);
+        return new MongoTemplateSearchService<>(Record.class, mongo);
     }
 }

@@ -4,7 +4,7 @@ package ru.cdfe.gdr.security;
  * Maps {@link String} tokens to {@link GdrAuthenticationToken} instances
  * representing the user identified by the token.
  */
-public interface GdrAuthenticationRepository {
+public interface GdrAuthenticationStore {
     /**
      * Returns the authentication for the specified token or {@code null}
      * if there is no authentication for this token.

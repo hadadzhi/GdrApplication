@@ -6,5 +6,4 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import ru.cdfe.gdr.domain.Record;
 
-public interface RecordRepository extends MongoRepository<Record, String> {
-}
+public interface RecordRepository extends MongoRepository<Record, String> {}
