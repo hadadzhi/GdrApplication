@@ -35,4 +35,6 @@ public class GdrSecurityProperties {
     
     private String defaultUserName = SecurityConstants.DEFAULT_USER_NAME;
     private String defaultUserSecret = SecurityConstants.DEFAULT_USER_SECRET;
+    
+    private boolean persistentAuthentication = false;
 }

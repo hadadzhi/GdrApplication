@@ -20,21 +20,21 @@ import java.time.Instant;
 
 /**
  * Checks the incoming request headers for an authentication token and,
- * if it is present and valid, puts the {@link TokenAuthentication} associated with
+ * if it is present and valid, puts the {@link GdrAuthenticationToken} associated with
  * that token to the {@link SecurityContextHolder}.
  */
 @Slf4j
 @Component
 @Configuration
-public class TokenAuthenticationFilter extends OncePerRequestFilter {
-    private final TokenAuthenticationRepository tokenAuthenticationRepository;
+public class GdrAuthenticationFilter extends OncePerRequestFilter {
+    private final GdrAuthenticationRepository gdrAuthenticationRepository;
     private final GdrSecurityProperties securityProperties;
     
     @Autowired
-    public TokenAuthenticationFilter(TokenAuthenticationRepository tokenAuthenticationRepository,
-                                     GdrSecurityProperties securityProperties) {
+    public GdrAuthenticationFilter(GdrAuthenticationRepository gdrAuthenticationRepository,
+                                   GdrSecurityProperties securityProperties) {
         
-        this.tokenAuthenticationRepository = tokenAuthenticationRepository;
+        this.gdrAuthenticationRepository = gdrAuthenticationRepository;
         this.securityProperties = securityProperties;
     }
     
@@ -45,16 +45,16 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             final String token = request.getHeader(SecurityConstants.AUTH_HEADER_NAME);
             if (token != null) {
-                final TokenAuthentication auth = tokenAuthenticationRepository.get(token);
+                final GdrAuthenticationToken auth = gdrAuthenticationRepository.get(token);
                 if (auth != null) {
                     if (!auth.isAuthenticated()) {
                         log.debug("Removed expired authentication: {}", auth);
-                        tokenAuthenticationRepository.remove(token);
+                        gdrAuthenticationRepository.remove(token);
                     } else {
                         if (auth.getRemoteAddr().equals(request.getRemoteAddr())) {
                             final Instant expiry = Instant.now().plus(securityProperties.getTokenExpiry());
-                            final TokenAuthentication updatedAuth = new TokenAuthentication(auth, expiry);
-                            tokenAuthenticationRepository.put(updatedAuth);
+                            final GdrAuthenticationToken updatedAuth = new GdrAuthenticationToken(auth, expiry);
+                            gdrAuthenticationRepository.put(updatedAuth);
                             SecurityContextHolder.getContext().setAuthentication(updatedAuth);
                         } else {
                             log.debug("Request address {} doesn't match the authentication: {}", request, auth);
@@ -72,7 +72,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
      * properly registered through Spring Security configuration.
      */
     @Bean
-    protected FilterRegistrationBean filterRegistrationBean(TokenAuthenticationFilter f) {
+    protected FilterRegistrationBean filterRegistrationBean(GdrAuthenticationFilter f) {
         final FilterRegistrationBean frb = new FilterRegistrationBean<>(f);
         frb.setEnabled(false);
         return frb;

@@ -11,17 +11,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import ru.cdfe.gdr.security.TokenAuthenticationFilter;
+import ru.cdfe.gdr.security.GdrAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
-    private final TokenAuthenticationFilter tokenAuthenticationFilter;
+    private final GdrAuthenticationFilter gdrAuthenticationFilter;
     
     @Autowired
-    public SecurityConfigurer(TokenAuthenticationFilter tokenAuthenticationFilter) {
-        this.tokenAuthenticationFilter = tokenAuthenticationFilter;
+    public SecurityConfigurer(GdrAuthenticationFilter gdrAuthenticationFilter) {
+        this.gdrAuthenticationFilter = gdrAuthenticationFilter;
     }
     
     @Override
@@ -42,7 +42,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
             /*
              * Put our glorious authentication filter just before the last-resort anonymous authentication filter.
              */
-            .addFilterBefore(tokenAuthenticationFilter, AnonymousAuthenticationFilter.class)
+            .addFilterBefore(gdrAuthenticationFilter, AnonymousAuthenticationFilter.class)
             /*
              * Allow all requests: access control is done through global method security.
              */

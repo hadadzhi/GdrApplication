@@ -59,6 +59,7 @@ public class UserController {
     }
     
     @GetMapping
+    @PreAuthorize("permitAll()")
     public PagedResources<Resource<User>> getAll(Pageable pageable, PagedResourcesAssembler<User> assembler) {
         log.debug("GET: page: {}", pageable);
         
@@ -72,6 +73,7 @@ public class UserController {
     }
     
     @GetMapping("{id}")
+    @PreAuthorize("permitAll()")
     public Resource<User> get(@PathVariable String id) {
         log.debug("GET: user: {}", id);
         final User user = userRepository.findOne(id).orElseThrow(UserNotFound::new);

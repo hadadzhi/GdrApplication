@@ -28,8 +28,8 @@ import ru.cdfe.gdr.exception.AuthenticationException;
 import ru.cdfe.gdr.exception.OptimisticLockingException;
 import ru.cdfe.gdr.exception.UserNameExistsException;
 import ru.cdfe.gdr.repository.UserRepository;
-import ru.cdfe.gdr.security.TokenAuthentication;
-import ru.cdfe.gdr.security.TokenAuthenticationRepository;
+import ru.cdfe.gdr.security.GdrAuthenticationToken;
+import ru.cdfe.gdr.security.GdrAuthenticationRepository;
 import ru.cdfe.gdr.security.annotation.TokenAuthenticated;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,19 +48,19 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 @RequestMapping
 public class AuthenticationController {
-    private final TokenAuthenticationRepository tokenAuthenticationRepository;
+    private final GdrAuthenticationRepository gdrAuthenticationRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final SecureRandom secureRandom = new SecureRandom();
     private final GdrSecurityProperties securityProperties;
     
     @Autowired
-    public AuthenticationController(TokenAuthenticationRepository tokenAuthenticationRepository,
+    public AuthenticationController(GdrAuthenticationRepository gdrAuthenticationRepository,
                                     PasswordEncoder passwordEncoder,
                                     UserRepository userRepository,
                                     GdrSecurityProperties securityProperties) {
         
-        this.tokenAuthenticationRepository = tokenAuthenticationRepository;
+        this.gdrAuthenticationRepository = gdrAuthenticationRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.securityProperties = securityProperties;
@@ -102,7 +102,7 @@ public class AuthenticationController {
         final Instant expiry = Instant.now().plus(securityProperties.getTokenExpiry());
         final String token = generateToken();
         
-        tokenAuthenticationRepository.put(new TokenAuthentication(token, user,
+        gdrAuthenticationRepository.put(new GdrAuthenticationToken(token, user,
                 httpRequest.getRemoteAddr(), expiry));
         
         log.info("Login success: {}@{}: {}", user.getName(), httpRequest.getRemoteAddr(), user);
@@ -112,8 +112,8 @@ public class AuthenticationController {
     @PostMapping(Relations.LOGOUT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @TokenAuthenticated
-    public void logout(TokenAuthentication auth) {
-        if (!tokenAuthenticationRepository.remove(auth)) {
+    public void logout(GdrAuthenticationToken auth) {
+        if (!gdrAuthenticationRepository.remove(auth)) {
             log.error("Logout: authentication repository did not contain authentication: {}", auth);
         } else {
             log.info("Logout success: {}", auth.getPrincipal());
@@ -132,7 +132,7 @@ public class AuthenticationController {
     public AuthenticationResponse editCurrentUser(@AuthenticationPrincipal User user,
                                                   @RequestBody @Validated User editedUser,
                                                   HttpServletRequest request,
-                                                  TokenAuthentication auth) {
+                                                  GdrAuthenticationToken auth) {
         
         if (!editedUser.getAuthorities().equals(user.getAuthorities()) &&
                 !user.getAuthorities().contains(Authority.USERS)) {
@@ -168,6 +168,6 @@ public class AuthenticationController {
         final byte[] bytes = new byte[securityProperties.getTokenLength()];
         secureRandom.nextBytes(bytes);
         final String token = Base64.getEncoder().encodeToString(bytes).replace("=", "");
-        return tokenAuthenticationRepository.contains(token) ? generateToken() : token;
+        return gdrAuthenticationRepository.contains(token) ? generateToken() : token;
     }
 }
