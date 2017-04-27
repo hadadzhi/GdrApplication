@@ -28,7 +28,6 @@ public final class GdrAuthenticationToken implements Authentication {
      * Clashing tokens {@code =>} disaster.
      */
     @Id
-    @Field("token")
     private final String token;
     
     @DBRef

@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,9 +25,12 @@ import ru.cdfe.gdr.domain.security.User;
 import ru.cdfe.gdr.security.GdrAuthenticationToken;
 import ru.cdfe.gdr.validation.annotation.ExforSubent;
 
+import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.temporal.TemporalAccessor;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +52,7 @@ public class Record implements Identifiable<String> {
     
     @LastModifiedDate
     @JsonProperty(access = READ_ONLY)
-    private long lastModified;
+    private Instant lastModified;
     
     @DBRef
     @LastModifiedBy
@@ -130,6 +134,14 @@ public class Record implements Identifiable<String> {
             }
             
             return Optional.empty();
+        }
+    }
+    
+    @Component
+    static class InstantDateTimeProvider implements DateTimeProvider {
+        @Override
+        public Optional<TemporalAccessor> getNow() {
+            return Optional.of(Instant.now());
         }
     }
 }
