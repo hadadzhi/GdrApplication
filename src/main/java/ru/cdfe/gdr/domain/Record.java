@@ -25,7 +25,6 @@ import ru.cdfe.gdr.domain.security.User;
 import ru.cdfe.gdr.security.GdrAuthenticationToken;
 import ru.cdfe.gdr.validation.annotation.ExforSubent;
 
-import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;

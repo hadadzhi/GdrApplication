@@ -60,7 +60,7 @@ public class UserController {
     
     @GetMapping
     @PreAuthorize("permitAll()")
-    public PagedResources<Resource<User>> getAll(Pageable pageable, PagedResourcesAssembler<User> assembler) {
+    public PagedResources<Resource<User>> get(Pageable pageable, PagedResourcesAssembler<User> assembler) {
         log.debug("GET: page: {}", pageable);
         
         final PagedResources<Resource<User>> users = assembler.toResource(

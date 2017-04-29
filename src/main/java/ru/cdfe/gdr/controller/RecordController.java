@@ -51,7 +51,7 @@ public class RecordController {
     
     @GetMapping
     @PreAuthorize("permitAll()")
-    public PagedResources<Resource<Record>> getAll(Pageable pageable, PagedResourcesAssembler<Record> assembler) {
+    public PagedResources<Resource<Record>> get(Pageable pageable, PagedResourcesAssembler<Record> assembler) {
         log.debug("GET: page: {}", pageable);
         
         final PagedResources<Resource<Record>> resources = assembler.toResource(

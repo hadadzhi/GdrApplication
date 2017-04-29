@@ -17,4 +17,4 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Inherited
 @Documented
 @PreAuthorize("authentication instanceof T(ru.cdfe.gdr.security.GdrAuthenticationToken)")
-public @interface TokenAuthenticated {}
+public @interface GdrAuthenticated {}

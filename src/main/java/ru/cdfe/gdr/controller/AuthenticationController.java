@@ -28,9 +28,9 @@ import ru.cdfe.gdr.exception.AuthenticationException;
 import ru.cdfe.gdr.exception.OptimisticLockingException;
 import ru.cdfe.gdr.exception.UserNameExistsException;
 import ru.cdfe.gdr.repository.UserRepository;
-import ru.cdfe.gdr.security.GdrAuthenticationToken;
 import ru.cdfe.gdr.security.GdrAuthenticationStore;
-import ru.cdfe.gdr.security.annotation.TokenAuthenticated;
+import ru.cdfe.gdr.security.GdrAuthenticationToken;
+import ru.cdfe.gdr.security.annotation.GdrAuthenticated;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
@@ -111,7 +111,7 @@ public class AuthenticationController {
     
     @PostMapping(Relations.LOGOUT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @TokenAuthenticated
+    @GdrAuthenticated
     public void logout(GdrAuthenticationToken auth) {
         if (!gdrAuthenticationStore.remove(auth)) {
             log.error("Logout: authentication repository did not contain authentication: {}", auth);
@@ -121,14 +121,14 @@ public class AuthenticationController {
     }
     
     @GetMapping(Relations.CURRENT_USER)
-    @TokenAuthenticated
+    @GdrAuthenticated
     public Resource<User> currentUser(@AuthenticationPrincipal User user) {
         return new Resource<>(user, linkTo(AuthenticationController.class)
                 .slash(Relations.CURRENT_USER).withSelfRel());
     }
     
     @PutMapping(Relations.CURRENT_USER)
-    @TokenAuthenticated
+    @GdrAuthenticated
     public AuthenticationResponse editCurrentUser(@AuthenticationPrincipal User user,
                                                   @RequestBody @Validated User editedUser,
                                                   HttpServletRequest request,

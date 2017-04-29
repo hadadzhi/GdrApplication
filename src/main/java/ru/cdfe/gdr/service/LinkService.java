@@ -18,7 +18,6 @@ import ru.cdfe.gdr.controller.ServiceController;
 import java.net.URI;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Service
 public class LinkService {

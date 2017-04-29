@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
@@ -22,14 +22,12 @@ import java.util.List;
 @EnableWebMvc
 @EnableEntityLinks
 @EnableSpringDataWebSupport
-public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
+public class WebConfigurer implements WebMvcConfigurer {
     private final MappingJackson2HttpMessageConverter jackson2HttpMessageConverter;
     private final GdrProperties conf;
     
     @Autowired
-    public WebMvcConfigurer(MappingJackson2HttpMessageConverter jackson2HttpMessageConverter,
-                            GdrProperties conf) {
-        
+    public WebConfigurer(MappingJackson2HttpMessageConverter jackson2HttpMessageConverter, GdrProperties conf) {
         this.jackson2HttpMessageConverter = jackson2HttpMessageConverter;
         this.conf = conf;
     }
@@ -70,9 +68,6 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // Allow cross-origin requests to all url patterns
-        registry.addMapping("/**")
-                .allowedMethods("*")
-                .allowCredentials(false);
+        registry.addMapping("/**").allowedMethods("*");
     }
 }
