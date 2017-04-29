@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.cdfe.gdr.GdrSecurityProperties;
-import ru.cdfe.gdr.constant.SecurityConstants;
+import ru.cdfe.gdr.constant.Security;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -43,7 +43,7 @@ public class GdrAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            final String token = request.getHeader(SecurityConstants.AUTH_HEADER_NAME);
+            final String token = request.getHeader(Security.AUTH_HEADER_NAME);
             if (token != null) {
                 final GdrAuthenticationToken auth = gdrAuthenticationStore.get(token);
                 if (auth != null) {

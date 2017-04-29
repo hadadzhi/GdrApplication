@@ -3,7 +3,7 @@ package ru.cdfe.gdr.constant;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-public interface SecurityConstants {
+public interface Security {
     String DEFAULT_USER_NAME = "operator";
     String DEFAULT_USER_SECRET = "operator";
     int AUTH_TOKEN_LENGTH_BYTES = 32;
