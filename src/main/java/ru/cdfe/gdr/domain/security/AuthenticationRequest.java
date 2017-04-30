@@ -1,11 +1,9 @@
-package ru.cdfe.gdr.domain.security.dto;
+package ru.cdfe.gdr.domain.security;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.validation.annotation.Validated;
 
 @Data
-@Validated
 public class AuthenticationRequest {
     @NotEmpty
     private final String name;

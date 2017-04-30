@@ -68,7 +68,7 @@ public class UserController {
                 user -> new Resource<>(user, entityLinks.linkForSingleResource(user).withSelfRel()));
         
         linkService.fixPaginatedSelfLink(users, pageable, entityLinks.linkFor(User.class));
-     
+        
         return users;
     }
     

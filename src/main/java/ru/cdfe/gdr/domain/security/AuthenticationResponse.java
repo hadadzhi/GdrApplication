@@ -1,4 +1,4 @@
-package ru.cdfe.gdr.domain.security.dto;
+package ru.cdfe.gdr.domain.security;
 
 import lombok.Data;
 

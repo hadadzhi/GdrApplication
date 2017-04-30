@@ -26,7 +26,6 @@ public final class FittingService {
      * After a successful call to this method, the given approximation will contain the
      * fitted parameters of the curves as well as the minimized chi squared value.
      * If an exception is thrown from this method, the given approximation is unchanged.
-     *
      * @param approximation an {@link Approximation} instance containing the source data and the curves to be fitted
      *                      with initial guesses as their parameters
      * @throws FittingException if the minimization of chi squared did not converge or if the given approximation
@@ -118,19 +117,19 @@ public final class FittingService {
                 final double fullWidth = paramArray[paramIndex++];
                 
                 switch (curve.getType()) {
-                    case CurveTypes.GAUSSIAN: {
-                        sum += Curves.gaussian(x, maxCrossSection, energyAtMaxCrossSection,
-                                fullWidth / (2 * Math.sqrt(2 * Math.log(2))));
-                        break;
-                    }
-                    case CurveTypes.LORENTZIAN: {
-                        sum += Curves.lorentzian(x, (Math.PI / 2) * fullWidth * maxCrossSection,
-                                energyAtMaxCrossSection, fullWidth / 2);
-                        break;
-                    }
-                    default: {
-                        throw new FittingException("Unsupported curve type: " + curve.getType());
-                    }
+                case CurveTypes.GAUSSIAN: {
+                    sum += Curves.gaussian(x, maxCrossSection, energyAtMaxCrossSection,
+                            fullWidth / (2 * Math.sqrt(2 * Math.log(2))));
+                    break;
+                }
+                case CurveTypes.LORENTZIAN: {
+                    sum += Curves.lorentzian(x, (Math.PI / 2) * fullWidth * maxCrossSection,
+                            energyAtMaxCrossSection, fullWidth / 2);
+                    break;
+                }
+                default: {
+                    throw new FittingException("Unsupported curve type: " + curve.getType());
+                }
                 }
             }
             

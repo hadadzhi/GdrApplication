@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.cdfe.gdr.GdrSecurityProperties;
 import ru.cdfe.gdr.constant.Relations;
+import ru.cdfe.gdr.domain.security.AuthenticationRequest;
+import ru.cdfe.gdr.domain.security.AuthenticationResponse;
 import ru.cdfe.gdr.domain.security.Authority;
 import ru.cdfe.gdr.domain.security.User;
-import ru.cdfe.gdr.domain.security.dto.AuthenticationRequest;
-import ru.cdfe.gdr.domain.security.dto.AuthenticationResponse;
 import ru.cdfe.gdr.exception.AuthenticationException;
 import ru.cdfe.gdr.exception.OptimisticLockingException;
 import ru.cdfe.gdr.exception.UserNameExistsException;
@@ -167,7 +167,14 @@ public class AuthenticationController {
     private String generateToken() {
         final byte[] bytes = new byte[securityProperties.getTokenLength()];
         secureRandom.nextBytes(bytes);
-        final String token = Base64.getEncoder().encodeToString(bytes).replace("=", "");
-        return gdrAuthenticationStore.contains(token) ? generateToken() : token;
+        
+        String token = Base64.getEncoder().encodeToString(bytes).replace("=", "");
+        
+        if (gdrAuthenticationStore.contains(token)) {
+            log.debug("Recursively calling generateToken()");
+            token = generateToken();
+        }
+        
+        return token;
     }
 }

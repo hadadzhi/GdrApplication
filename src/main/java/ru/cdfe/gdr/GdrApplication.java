@@ -10,16 +10,12 @@ import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.hateoas.UriTemplate;
 import org.springframework.hateoas.hal.CurieProvider;
 import org.springframework.hateoas.hal.DefaultCurieProvider;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
-import ru.cdfe.gdr.domain.Record;
-import ru.cdfe.gdr.service.SearchService;
-import ru.cdfe.gdr.service.mongo.MongoTemplateSearchService;
 
 import javax.validation.Validator;
 
@@ -56,10 +52,5 @@ public class GdrApplication {
                 .writeConcern(WriteConcern.MAJORITY)
                 .readConcern(ReadConcern.MAJORITY)
                 .build();
-    }
-    
-    @Bean
-    public SearchService<Record> recordSearchService(MongoTemplate mongo) {
-        return new MongoTemplateSearchService<>(Record.class, mongo);
     }
 }
