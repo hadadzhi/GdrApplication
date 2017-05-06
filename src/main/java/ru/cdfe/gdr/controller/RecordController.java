@@ -67,18 +67,18 @@ public class RecordController {
     @PreAuthorize("permitAll()")
     public Resource<Record> get(@PathVariable String id) {
         log.debug("GET: record: {}", id);
-        final Record record = recordRepository.findOne(id).orElseThrow(RecordNotFound::new);
+        final Record record = recordRepository.findById(id).orElseThrow(RecordNotFound::new);
         return new Resource<>(record, entityLinks.linkForSingleResource(record).withSelfRel());
     }
     
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
-        if (!recordRepository.exists(id)) {
+        if (!recordRepository.existsById(id)) {
             log.debug("DELETE: record not found: {}", id);
             throw new RecordNotFound();
         }
-        recordRepository.delete(id);
+        recordRepository.deleteById(id);
         log.debug("DELETE: deleted record: {}", id);
     }
     
@@ -87,7 +87,7 @@ public class RecordController {
     public void put(@PathVariable String id,
                     @RequestBody @Validated Record record) {
         
-        final Record existingRecord = recordRepository.findOne(id).orElse(null);
+        final Record existingRecord = recordRepository.findById(id).orElse(null);
         
         if (existingRecord == null) {
             log.debug("PU record not found: {}", id);

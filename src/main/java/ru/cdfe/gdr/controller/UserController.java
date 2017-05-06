@@ -76,17 +76,17 @@ public class UserController {
     @PreAuthorize("permitAll()")
     public Resource<User> get(@PathVariable String id) {
         log.debug("GET: user: {}", id);
-        final User user = userRepository.findOne(id).orElseThrow(UserNotFound::new);
+        final User user = userRepository.findById(id).orElseThrow(UserNotFound::new);
         return new Resource<>(user, entityLinks.linkForSingleResource(user).withSelfRel());
     }
     
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id) {
-        if (!userRepository.exists(id)) {
+        if (!userRepository.existsById(id)) {
             log.debug("DELETE: user not found: {}", id);
             throw new UserNotFound();
         }
-        userRepository.delete(id);
+        userRepository.deleteById(id);
         log.debug("DELETE: deleted user: {}", id);
     }
     
@@ -95,7 +95,7 @@ public class UserController {
     public void put(@PathVariable String id,
                     @RequestBody @Validated User user) {
         
-        final User existingUser = userRepository.findOne(id).orElse(null);
+        final User existingUser = userRepository.findById(id).orElse(null);
         
         if (existingUser == null) {
             log.debug("PUT: user not found: {}", id);

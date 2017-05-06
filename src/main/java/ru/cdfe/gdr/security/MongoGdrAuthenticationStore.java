@@ -27,7 +27,7 @@ public class MongoGdrAuthenticationStore implements GdrAuthenticationStore {
     
     @Override
     public GdrAuthenticationToken get(String token) {
-        return repo.findOne(token).orElse(null);
+        return repo.findById(token).orElse(null);
     }
     
     @Override
@@ -41,7 +41,7 @@ public class MongoGdrAuthenticationStore implements GdrAuthenticationStore {
     @Override
     public GdrAuthenticationToken remove(String token) {
         final GdrAuthenticationToken prev = get(token);
-        repo.delete(token);
+        repo.deleteById(token);
         return prev;
     }
     
@@ -52,6 +52,6 @@ public class MongoGdrAuthenticationStore implements GdrAuthenticationStore {
     
     @Override
     public boolean contains(String token) {
-        return repo.exists(token);
+        return repo.existsById(token);
     }
 }
