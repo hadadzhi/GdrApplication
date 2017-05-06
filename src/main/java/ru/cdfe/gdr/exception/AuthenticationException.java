@@ -8,7 +8,7 @@ import ru.cdfe.gdr.constant.ErrorCodes;
 public class AuthenticationException extends GdrException {
     @Override
     public String getErrorCode() {
-        return ErrorCodes.SECURITY_FAILURE;
+        return ErrorCodes.BAD_CREDENTIALS;
     }
     
     public AuthenticationException() {

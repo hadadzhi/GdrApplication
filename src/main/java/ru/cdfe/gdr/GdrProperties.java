@@ -20,8 +20,7 @@ public class GdrProperties {
     private String curieName;
     
     @NotBlank
-    @URL
-    private String curieUrlTemplate;
+    private String curieUriTemplate;
     
     @Min(1)
     private int maxPageSize;

@@ -33,7 +33,7 @@ public class GdrApplication {
     
     @Bean
     public CurieProvider curieProvider(GdrProperties conf) {
-        return new DefaultCurieProvider(conf.getCurieName(), new UriTemplate(conf.getCurieUrlTemplate()));
+        return new DefaultCurieProvider(conf.getCurieName(), new UriTemplate(conf.getCurieUriTemplate()));
     }
     
     @Bean

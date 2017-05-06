@@ -4,7 +4,7 @@ public interface ErrorCodes {
     //@formatter:off
     String VALIDATION_FAILURE       = "gdr-error-validation-failure";
     String USERNAME_EXISTS          = "gdr-error-username-exists";
-    String SECURITY_FAILURE         = "gdr-error-security-failure";
+    String BAD_CREDENTIALS          = "gdr-error-bad-credentials";
     String SECRET_NOT_SPECIFIED     = "gdr-error-password-not-specified";
     String BAD_EXFOR_DATA           = "gdr-error-bad-exfor-data";
     String NO_EXFOR_DATA            = "gdr-error-no-exfor-data";

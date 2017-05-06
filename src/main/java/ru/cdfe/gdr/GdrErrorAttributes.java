@@ -27,7 +27,7 @@ public class GdrErrorAttributes extends DefaultErrorAttributes {
             } else if (ex instanceof MethodArgumentNotValidException) {
                 return ErrorCodes.VALIDATION_FAILURE;
             } else if (ex instanceof AccessDeniedException) {
-                return ErrorCodes.SECURITY_FAILURE;
+                return ErrorCodes.BAD_CREDENTIALS;
             }
             return null;
         });
