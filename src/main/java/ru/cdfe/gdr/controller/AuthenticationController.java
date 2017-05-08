@@ -31,6 +31,7 @@ import ru.cdfe.gdr.repository.UserRepository;
 import ru.cdfe.gdr.security.GdrAuthenticationStore;
 import ru.cdfe.gdr.security.GdrAuthenticationToken;
 import ru.cdfe.gdr.security.annotation.GdrAuthenticated;
+import ru.cdfe.gdr.service.ScheduledTasksService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
@@ -53,17 +54,20 @@ public class AuthenticationController {
     private final UserRepository userRepository;
     private final SecureRandom secureRandom = new SecureRandom();
     private final GdrSecurityProperties securityProperties;
+    private final ScheduledTasksService scheduledTasksService;
     
     @Autowired
     public AuthenticationController(GdrAuthenticationStore gdrAuthenticationStore,
                                     PasswordEncoder passwordEncoder,
                                     UserRepository userRepository,
-                                    GdrSecurityProperties securityProperties) {
+                                    GdrSecurityProperties securityProperties,
+                                    ScheduledTasksService scheduledTasksService) {
         
         this.gdrAuthenticationStore = gdrAuthenticationStore;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.securityProperties = securityProperties;
+        this.scheduledTasksService = scheduledTasksService;
     }
     
     @PostMapping(Relations.LOGIN)
@@ -71,6 +75,9 @@ public class AuthenticationController {
     public AuthenticationResponse login(@RequestBody @Validated AuthenticationRequest authRequest,
                                         HttpServletRequest httpRequest)
             throws UnknownHostException {
+        
+        // Purge expired authentications on login of any user
+        scheduledTasksService.purgeExpiredAuthenticationTokens();
         
         final User user = userRepository.findByName(authRequest.getName());
         

@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.hateoas.UriTemplate;
 import org.springframework.hateoas.hal.CurieProvider;
 import org.springframework.hateoas.hal.DefaultCurieProvider;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
@@ -26,6 +27,7 @@ import javax.validation.Validator;
 })
 @EnableMongoAuditing
 @EnableMongoRepositories
+@EnableScheduling
 public class GdrApplication {
     public static void main(String[] args) {
         SpringApplication.run(GdrApplication.class, args);

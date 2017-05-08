@@ -90,7 +90,7 @@ public class RecordController {
         final Record existingRecord = recordRepository.findById(id).orElse(null);
         
         if (existingRecord == null) {
-            log.debug("PU record not found: {}", id);
+            log.debug("PUT record not found: {}", id);
             throw new RecordNotFound();
         }
         
