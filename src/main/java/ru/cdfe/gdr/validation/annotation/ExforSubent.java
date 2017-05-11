@@ -20,7 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Pattern(regexp = "[A-Z0-9]{8}")
 @Constraint(validatedBy = {})
 public @interface ExforSubent {
-    String message() default "is not an exfor subent number";
+    String message() default "must be an exfor subent number";
     
     Class<?>[] groups() default {};
     
