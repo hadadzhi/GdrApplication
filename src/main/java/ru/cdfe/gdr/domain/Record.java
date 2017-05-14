@@ -41,22 +41,28 @@ import static java.util.stream.Collectors.joining;
 @Relation(collectionRelation = Relations.RECORDS)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class Record implements Identifiable<String> {
+    /**
+     * Internal generated id
+     */
     @Id
     @JsonIgnore
-    private String id; // Internal generated id
+    private String id;
     
+    /**
+     * Enables optimistic concurrency control
+     */
     @Version
     @JsonIgnore
-    private BigInteger version; // Enables optimistic concurrency control
+    private BigInteger version;
     
     @LastModifiedDate
     @JsonProperty(access = READ_ONLY)
-    private Instant lastModified;
+    private Instant timestamp;
     
     @DBRef
     @LastModifiedBy
     @JsonProperty(access = READ_ONLY)
-    private User lastModifiedBy;
+    private User modifiedBy;
     
     @NotEmpty
     @ExforSubent
