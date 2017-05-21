@@ -20,9 +20,9 @@ $(function () {
     
     $('[data-toggle="tooltip"]').tooltip(); // Init tooltips
     
-    $(window).on("beforeunload", function () {
-        return "Please confirm exiting the application.";
-    });
+    // $(window).on("beforeunload", function () {
+    //     return "Please confirm exiting the application.";
+    // });
     
     $("#subent-btn").click(filterSubent);
     $("#subent-input").change(filterSubent);
