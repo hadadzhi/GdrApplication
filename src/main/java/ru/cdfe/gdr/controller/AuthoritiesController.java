@@ -18,16 +18,16 @@ import java.util.Arrays;
 @RequestMapping(Relations.REPOSITORY + "/" + Relations.AUTHORITIES)
 @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).USERS)")
 class AuthoritiesController {
-    private final EntityLinks entityLinks;
-    
-    @Autowired
-    AuthoritiesController(EntityLinks entityLinks) {
-        this.entityLinks = entityLinks;
-    }
-    
-    @GetMapping
-    public Resources<Authority> availableAuthorities() {
-        return new Resources<>(Arrays.asList(Authority.values()),
-                entityLinks.linkFor(Authority.class).withRel(Relations.AUTHORITIES));
-    }
+private final EntityLinks entityLinks;
+
+@Autowired
+AuthoritiesController(EntityLinks entityLinks) {
+  this.entityLinks = entityLinks;
+}
+
+@GetMapping
+public Resources<Authority> availableAuthorities() {
+  return new Resources<>(Arrays.asList(Authority.values()),
+      entityLinks.linkFor(Authority.class).withRel(Relations.AUTHORITIES));
+}
 }

@@ -16,21 +16,21 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 @Slf4j
 @Service
 public class ScheduledTasksService {
-    private final MongoTemplate mongo;
-    
-    @Autowired
-    public ScheduledTasksService(MongoTemplate mongo) {
-        this.mongo = mongo;
-    }
-    
-    @Scheduled(
-            initialDelay = 0, // Run at startup
-            fixedRate = 1000 * 60 * 60 // Run once an hour after startup
-    )
-    public void purgeExpiredAuthenticationTokens() {
-        log.debug("Purging expired authentication tokens");
-        final DeleteResult result = mongo.remove(query(where("expiring").lt(Instant.now())),
-                GdrAuthenticationToken.class);
-        log.debug("Purged expired authentication tokens: {}", result);
-    }
+private final MongoTemplate mongo;
+
+@Autowired
+public ScheduledTasksService(MongoTemplate mongo) {
+  this.mongo = mongo;
+}
+
+@Scheduled(
+    initialDelay = 0, // Run at startup
+    fixedRate = 1000 * 60 * 60 // Run once an hour after startup
+)
+public void purgeExpiredAuthenticationTokens() {
+  log.debug("Purging expired authentication tokens");
+  final DeleteResult result = mongo.remove(query(where("expiring").lt(Instant.now())),
+      GdrAuthenticationToken.class);
+  log.debug("Purged expired authentication tokens: {}", result);
+}
 }

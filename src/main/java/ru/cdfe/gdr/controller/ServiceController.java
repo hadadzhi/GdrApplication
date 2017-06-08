@@ -28,45 +28,45 @@ import java.util.List;
 @RestController
 @RequestMapping("service")
 public class ServiceController {
-    private final ExforService exforService;
-    private final FittingService fittingService;
-    private final LinkService linkService;
-    
-    @Autowired
-    public ServiceController(ExforService exforService, FittingService fittingService, LinkService linkService) {
-        this.exforService = exforService;
-        this.fittingService = fittingService;
-        this.linkService = linkService;
-    }
-    
-    @GetMapping(Relations.EXFOR)
-    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).EXFOR)")
-    public Resource<Record>
-    exfor(@RequestParam(name = Parameters.SUBENT) String exforNumber,
-          @RequestParam(name = Parameters.ENERGY_COL, defaultValue = "0") int enCol,
-          @RequestParam(name = Parameters.CROSS_SECTION_COL, defaultValue = "1") int csCol,
-          @RequestParam(name = Parameters.CROSS_SECTION_ERR_COL, defaultValue = "2") int csErrCol) {
-        
-        final List<DataPoint> exforData = exforService.getData(exforNumber, enCol, csCol, csErrCol);
-        final List<Reaction> exforReactions = exforService.getReactions(exforNumber);
-        
-        final GdrParameters parameters = new GdrParameters(exforData);
-        
-        final Record recordTemplate = new Record();
-        recordTemplate.setExforNumber(exforNumber);
-        recordTemplate.setReactions(exforReactions);
-        recordTemplate.setSourceData(exforData);
-        recordTemplate.setIntegratedCrossSection(parameters.getIntegratedCrossSection());
-        recordTemplate.setEnergyCenter(parameters.getEnergyCenter());
-        recordTemplate.setFirstMoment(parameters.getFirstMoment());
-        
-        return new Resource<>(recordTemplate, linkService.fitterLink());
-    }
-    
-    @PostMapping(Relations.FITTER)
-    @PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).FITTING)")
-    public Resource<Approximation> fit(@RequestBody @Validated Approximation initGuess) {
-        fittingService.fit(initGuess);
-        return new Resource<>(initGuess);
-    }
+private final ExforService exforService;
+private final FittingService fittingService;
+private final LinkService linkService;
+
+@Autowired
+public ServiceController(ExforService exforService, FittingService fittingService, LinkService linkService) {
+  this.exforService = exforService;
+  this.fittingService = fittingService;
+  this.linkService = linkService;
+}
+
+@GetMapping(Relations.EXFOR)
+@PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).EXFOR)")
+public Resource<Record>
+exfor(@RequestParam(name = Parameters.SUBENT) String exforNumber,
+      @RequestParam(name = Parameters.ENERGY_COL, defaultValue = "0") int enCol,
+      @RequestParam(name = Parameters.CROSS_SECTION_COL, defaultValue = "1") int csCol,
+      @RequestParam(name = Parameters.CROSS_SECTION_ERR_COL, defaultValue = "2") int csErrCol) {
+
+  final List<DataPoint> exforData = exforService.getData(exforNumber, enCol, csCol, csErrCol);
+  final List<Reaction> exforReactions = exforService.getReactions(exforNumber);
+
+  final GdrParameters parameters = new GdrParameters(exforData);
+
+  final Record recordTemplate = new Record();
+  recordTemplate.setExforNumber(exforNumber);
+  recordTemplate.setReactions(exforReactions);
+  recordTemplate.setSourceData(exforData);
+  recordTemplate.setIntegratedCrossSection(parameters.getIntegratedCrossSection());
+  recordTemplate.setEnergyCenter(parameters.getEnergyCenter());
+  recordTemplate.setFirstMoment(parameters.getFirstMoment());
+
+  return new Resource<>(recordTemplate, linkService.fitterLink());
+}
+
+@PostMapping(Relations.FITTER)
+@PreAuthorize("hasAuthority(T(ru.cdfe.gdr.domain.security.Authority).FITTING)")
+public Resource<Approximation> fit(@RequestBody @Validated Approximation initGuess) {
+  fittingService.fit(initGuess);
+  return new Resource<>(initGuess);
+}
 }

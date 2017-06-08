@@ -6,23 +6,23 @@ import ru.cdfe.gdr.constant.ErrorCodes;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class NoExforDataException extends GdrException {
-    @Override
-    public String getErrorCode() {
-        return ErrorCodes.NO_EXFOR_DATA;
-    }
-    
-    public NoExforDataException() {
-    }
-    
-    public NoExforDataException(String message) {
-        super(message);
-    }
-    
-    public NoExforDataException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    
-    public NoExforDataException(Throwable cause) {
-        super(cause);
-    }
+@Override
+public String getErrorCode() {
+  return ErrorCodes.NO_EXFOR_DATA;
+}
+
+public NoExforDataException() {
+}
+
+public NoExforDataException(String message) {
+  super(message);
+}
+
+public NoExforDataException(String message, Throwable cause) {
+  super(message, cause);
+}
+
+public NoExforDataException(Throwable cause) {
+  super(cause);
+}
 }

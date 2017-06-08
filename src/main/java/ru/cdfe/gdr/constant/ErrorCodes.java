@@ -1,7 +1,7 @@
 package ru.cdfe.gdr.constant;
 
 public interface ErrorCodes {
-    //@formatter:off
+//@formatter:off
     String VALIDATION_FAILURE       = "gdr-error-validation-failure";
     String USERNAME_EXISTS          = "gdr-error-username-exists";
     String BAD_CREDENTIALS          = "gdr-error-bad-credentials";

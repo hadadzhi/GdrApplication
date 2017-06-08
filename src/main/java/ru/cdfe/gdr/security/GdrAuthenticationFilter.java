@@ -27,54 +27,54 @@ import java.time.Instant;
 @Component
 @Configuration
 public class GdrAuthenticationFilter extends OncePerRequestFilter {
-    private final GdrAuthenticationStore gdrAuthenticationStore;
-    private final GdrSecurityProperties securityProperties;
-    
-    @Autowired
-    public GdrAuthenticationFilter(GdrAuthenticationStore gdrAuthenticationStore,
-                                   GdrSecurityProperties securityProperties) {
-        
-        this.gdrAuthenticationStore = gdrAuthenticationStore;
-        this.securityProperties = securityProperties;
-    }
-    
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            final String token = request.getHeader(Security.AUTH_HEADER_NAME);
-            if (token != null) {
-                final GdrAuthenticationToken auth = gdrAuthenticationStore.get(token);
-                if (auth != null) {
-                    if (!auth.isAuthenticated()) {
-                        log.debug("Removed expired authentication: {}", auth);
-                        gdrAuthenticationStore.remove(token);
-                    } else {
-                        if (auth.getRemoteAddr().equals(request.getRemoteAddr())) {
-                            final Instant expiry = Instant.now().plus(securityProperties.getTokenExpiry());
-                            final GdrAuthenticationToken updatedAuth = new GdrAuthenticationToken(auth, expiry);
-                            gdrAuthenticationStore.put(updatedAuth);
-                            SecurityContextHolder.getContext().setAuthentication(updatedAuth);
-                        } else {
-                            log.debug("Request address {} doesn't match the authentication: {}", request, auth);
-                        }
-                    }
-                }
-            }
+private final GdrAuthenticationStore gdrAuthenticationStore;
+private final GdrSecurityProperties securityProperties;
+
+@Autowired
+public GdrAuthenticationFilter(GdrAuthenticationStore gdrAuthenticationStore,
+                               GdrSecurityProperties securityProperties) {
+  
+  this.gdrAuthenticationStore = gdrAuthenticationStore;
+  this.securityProperties = securityProperties;
+}
+
+@Override
+protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    throws ServletException, IOException {
+  
+  if (SecurityContextHolder.getContext().getAuthentication() == null) {
+    final String token = request.getHeader(Security.AUTH_HEADER_NAME);
+    if (token != null) {
+      final GdrAuthenticationToken auth = gdrAuthenticationStore.get(token);
+      if (auth != null) {
+        if (!auth.isAuthenticated()) {
+          log.debug("Removed expired authentication: {}", auth);
+          gdrAuthenticationStore.remove(token);
+        } else {
+          if (auth.getRemoteAddr().equals(request.getRemoteAddr())) {
+            final Instant expiry = Instant.now().plus(securityProperties.getTokenExpiry());
+            final GdrAuthenticationToken updatedAuth = new GdrAuthenticationToken(auth, expiry);
+            gdrAuthenticationStore.put(updatedAuth);
+            SecurityContextHolder.getContext().setAuthentication(updatedAuth);
+          } else {
+            log.debug("Request address {} doesn't match the authentication: {}", request, auth);
+          }
         }
-        
-        filterChain.doFilter(request, response);
+      }
     }
-    
-    /**
-     * Disable automatic registration of this filter, as it must be
-     * properly registered through Spring Security configuration.
-     */
-    @Bean
-    protected FilterRegistrationBean filterRegistrationBean(GdrAuthenticationFilter f) {
-        final FilterRegistrationBean frb = new FilterRegistrationBean<>(f);
-        frb.setEnabled(false);
-        return frb;
-    }
+  }
+  
+  filterChain.doFilter(request, response);
+}
+
+/**
+ * Disable automatic registration of this filter, as it must be
+ * properly registered through Spring Security configuration.
+ */
+@Bean
+protected FilterRegistrationBean filterRegistrationBean(GdrAuthenticationFilter f) {
+  final FilterRegistrationBean frb = new FilterRegistrationBean<>(f);
+  frb.setEnabled(false);
+  return frb;
+}
 }

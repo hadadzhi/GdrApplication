@@ -16,6 +16,7 @@ $(function () {
         alert("Not Implemented");
         event.preventDefault();
     }
+    
     // End of functions
     
     $('[data-toggle="tooltip"]').tooltip(); // Init tooltips

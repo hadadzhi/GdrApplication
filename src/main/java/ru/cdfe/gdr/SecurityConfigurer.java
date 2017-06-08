@@ -17,15 +17,15 @@ import ru.cdfe.gdr.security.GdrAuthenticationFilter;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
-    private final GdrAuthenticationFilter gdrAuthenticationFilter;
-    
-    @Autowired
-    public SecurityConfigurer(GdrAuthenticationFilter gdrAuthenticationFilter) {
-        this.gdrAuthenticationFilter = gdrAuthenticationFilter;
-    }
-    
-    @Override
-    protected void configure(HttpSecurity http) throws Exception { //@formatter:off
+private final GdrAuthenticationFilter gdrAuthenticationFilter;
+
+@Autowired
+public SecurityConfigurer(GdrAuthenticationFilter gdrAuthenticationFilter) {
+  this.gdrAuthenticationFilter = gdrAuthenticationFilter;
+}
+
+@Override
+protected void configure(HttpSecurity http) throws Exception { //@formatter:off
         http
             /*
              * Disable stuff we don't need that's on by default.
@@ -48,9 +48,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
              */
             .authorizeRequests().anyRequest().permitAll();
     } //@formatter:on
-    
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+
+@Bean
+public PasswordEncoder passwordEncoder() {
+  return new BCryptPasswordEncoder();
+}
 }

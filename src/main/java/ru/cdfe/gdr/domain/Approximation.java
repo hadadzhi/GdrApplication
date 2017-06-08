@@ -10,20 +10,20 @@ import java.util.List;
 
 @Data
 public class Approximation {
-    @NotBlank
-    private String description;
-    
-    @Finite
-    private double chiSquared;
-    
-    @Finite
-    private double chiSquaredReduced;
-    
-    @NotEmpty
-    @Valid
-    private List<DataPoint> sourceData;
-    
-    @NotEmpty
-    @Valid
-    private List<Curve> curves;
+@NotBlank
+private String description;
+
+@Finite
+private double chiSquared;
+
+@Finite
+private double chiSquaredReduced;
+
+@NotEmpty
+@Valid
+private List<DataPoint> sourceData;
+
+@NotEmpty
+@Valid
+private List<Curve> curves;
 }
