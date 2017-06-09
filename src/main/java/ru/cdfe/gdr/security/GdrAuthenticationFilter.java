@@ -42,27 +42,29 @@ public GdrAuthenticationFilter(GdrAuthenticationStore gdrAuthenticationStore,
 protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
     throws ServletException, IOException {
   
+  log.debug("Filtering: {}", request.getMethod() + " " + request.getRequestURI() +
+      " from " + request.getRemoteHost() + "(" + request.getRemoteAddr() + ")");
+  
   if (SecurityContextHolder.getContext().getAuthentication() == null) {
     final String token = request.getHeader(Security.AUTH_HEADER_NAME);
     if (token != null) {
       final GdrAuthenticationToken auth = gdrAuthenticationStore.get(token);
       if (auth != null) {
         if (!auth.isAuthenticated()) {
-          log.debug("Removed expired authentication: {}", auth);
           gdrAuthenticationStore.remove(token);
+          log.debug("Removed expired authentication: {}", auth);
         } else {
           if (auth.getRemoteAddr().equals(request.getRemoteAddr())) {
             final Instant expiry = Instant.now().plus(securityProperties.getTokenExpiry());
             final GdrAuthenticationToken updatedAuth = new GdrAuthenticationToken(auth, expiry);
             gdrAuthenticationStore.put(updatedAuth);
             SecurityContextHolder.getContext().setAuthentication(updatedAuth);
-          } else {
-            log.debug("Request address {} doesn't match the authentication: {}", request, auth);
-          }
+            log.debug("Updated authentication token: {}", updatedAuth);
+          } else log.debug("Request address {} doesn't match the authentication: {}", request, auth);
         }
-      }
-    }
-  }
+      } else log.debug("No authentication token for {}", token);
+    } else log.debug("No authentication header");
+  } else log.debug("Already authenticated: {}", SecurityContextHolder.getContext().getAuthentication());
   
   filterChain.doFilter(request, response);
 }
