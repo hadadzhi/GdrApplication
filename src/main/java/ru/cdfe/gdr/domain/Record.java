@@ -41,112 +41,112 @@ import static java.util.stream.Collectors.joining;
 @Relation(collectionRelation = Relations.RECORDS)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class Record implements Identifiable<String> {
-/**
- * Internal generated id
- */
-@Id
-@JsonIgnore
-private String id;
-
-/**
- * Enables optimistic concurrency control
- */
-@Version
-@JsonIgnore
-private BigInteger version;
-
-@LastModifiedDate
-@JsonProperty(access = READ_ONLY)
-private Instant timestamp;
-
-@DBRef
-@LastModifiedBy
-@JsonProperty(access = READ_ONLY)
-private User modifiedBy;
-
-@NotEmpty
-@ExforSubent
-private String exforNumber;
-
-@Valid
-@NotNull
-private List<DataPoint> sourceData;
-
-@NotEmpty
-@Valid
-private List<Approximation> approximations;
-
-@NotEmpty
-@Valid
-private List<Reaction> reactions;
-
-@NotNull
-@Valid
-private Quantity integratedCrossSection;
-
-@NotNull
-@Valid
-private Quantity firstMoment;
-
-@NotNull
-@Valid
-private Quantity energyCenter;
-
-// Denormalized properties for fast access, sorting and filtering
-@JsonProperty(access = READ_ONLY)
-private Quantity maxCrossSection;
-
-@JsonProperty(access = READ_ONLY)
-private Quantity energyAtMaxCrossSection;
-
-@JsonProperty(access = READ_ONLY)
-private Quantity fullWidthAtHalfMaximum;
-
-@JsonProperty(access = READ_ONLY)
-private Double chiSquaredReduced;
-
-@JsonProperty(access = READ_ONLY)
-private String reactionString;
-
-public void denormalize() {
-  final Approximation approximation = getApproximations().get(0);
-  final Curve curve = approximation.getCurves().get(0);
-
-  setEnergyAtMaxCrossSection(curve.getEnergyAtMaxCrossSection());
-  setMaxCrossSection(curve.getMaxCrossSection());
-  setFullWidthAtHalfMaximum(curve.getFullWidthAtHalfMaximum());
-  setChiSquaredReduced(approximation.getChiSquaredReduced());
-
-  setReactionString(getReactions().stream().map(Reaction::toString).collect(joining("+")));
-}
-
-@Component
-static class RecordMongoEventListener extends AbstractMongoEventListener<Record> {
-  @Override
-  public void onBeforeConvert(BeforeConvertEvent<Record> event) {
-    event.getSource().denormalize();
-  }
-}
-
-@Component
-static class GdrAuditorAware implements AuditorAware<User> {
-  @Override
-  public Optional<User> getCurrentAuditor() {
-    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-    if (authentication instanceof GdrAuthenticationToken) {
-      return Optional.of(GdrAuthenticationToken.class.cast(authentication).getPrincipal());
+    /**
+     * Internal generated id
+     */
+    @Id
+    @JsonIgnore
+    private String id;
+    
+    /**
+     * Enables optimistic concurrency control
+     */
+    @Version
+    @JsonIgnore
+    private BigInteger version;
+    
+    @LastModifiedDate
+    @JsonProperty(access = READ_ONLY)
+    private Instant timestamp;
+    
+    @DBRef
+    @LastModifiedBy
+    @JsonProperty(access = READ_ONLY)
+    private User modifiedBy;
+    
+    @NotEmpty
+    @ExforSubent
+    private String exforNumber;
+    
+    @Valid
+    @NotNull
+    private List<DataPoint> sourceData;
+    
+    @NotEmpty
+    @Valid
+    private List<Approximation> approximations;
+    
+    @NotEmpty
+    @Valid
+    private List<Reaction> reactions;
+    
+    @NotNull
+    @Valid
+    private Quantity integratedCrossSection;
+    
+    @NotNull
+    @Valid
+    private Quantity firstMoment;
+    
+    @NotNull
+    @Valid
+    private Quantity energyCenter;
+    
+    // Denormalized properties for fast access, sorting and filtering
+    @JsonProperty(access = READ_ONLY)
+    private Quantity maxCrossSection;
+    
+    @JsonProperty(access = READ_ONLY)
+    private Quantity energyAtMaxCrossSection;
+    
+    @JsonProperty(access = READ_ONLY)
+    private Quantity fullWidthAtHalfMaximum;
+    
+    @JsonProperty(access = READ_ONLY)
+    private Double chiSquaredReduced;
+    
+    @JsonProperty(access = READ_ONLY)
+    private String reactionString;
+    
+    public void denormalize() {
+        final Approximation approximation = getApproximations().get(0);
+        final Curve curve = approximation.getCurves().get(0);
+        
+        setEnergyAtMaxCrossSection(curve.getEnergyAtMaxCrossSection());
+        setMaxCrossSection(curve.getMaxCrossSection());
+        setFullWidthAtHalfMaximum(curve.getFullWidthAtHalfMaximum());
+        setChiSquaredReduced(approximation.getChiSquaredReduced());
+        
+        setReactionString(getReactions().stream().map(Reaction::toString).collect(joining("+")));
     }
-
-    return Optional.empty();
-  }
-}
-
-@Component
-static class InstantDateTimeProvider implements DateTimeProvider {
-  @Override
-  public Optional<TemporalAccessor> getNow() {
-    return Optional.of(Instant.now());
-  }
-}
+    
+    @Component
+    static class RecordMongoEventListener extends AbstractMongoEventListener<Record> {
+        @Override
+        public void onBeforeConvert(BeforeConvertEvent<Record> event) {
+            event.getSource().denormalize();
+        }
+    }
+    
+    @Component
+    static class GdrAuditorAware implements AuditorAware<User> {
+        @Override
+        public Optional<User> getCurrentAuditor() {
+            final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            
+            if (authentication instanceof GdrAuthenticationToken) {
+                return Optional.of(GdrAuthenticationToken.class.cast(authentication).getPrincipal());
+            }
+            
+            return Optional.empty();
+        }
+    }
+    
+    @Component
+    static class InstantDateTimeProvider implements DateTimeProvider {
+        @Override
+        public Optional<TemporalAccessor> getNow() {
+            return Optional.of(Instant.now());
+        }
+    }
 }

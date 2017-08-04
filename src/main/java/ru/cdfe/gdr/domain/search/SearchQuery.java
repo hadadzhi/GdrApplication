@@ -9,9 +9,9 @@ import java.util.Set;
 
 @Data
 public final class SearchQuery {
-@NotEmpty
-private final Set<SearchTerm> where = Collections.emptySet();
-
-@NotNull
-private final Set<String> select = Collections.emptySet();
+    @NotEmpty
+    private final Set<SearchTerm> where = Collections.emptySet();
+    
+    @NotNull
+    private final Set<String> select = Collections.emptySet();
 }

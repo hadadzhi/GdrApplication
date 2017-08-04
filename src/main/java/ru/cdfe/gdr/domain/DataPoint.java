@@ -11,11 +11,11 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DataPoint {
-@NotNull
-@Valid
-private Quantity energy;
-
-@NotNull
-@Valid
-private Quantity crossSection;
+    @NotNull
+    @Valid
+    private Quantity energy;
+    
+    @NotNull
+    @Valid
+    private Quantity crossSection;
 }

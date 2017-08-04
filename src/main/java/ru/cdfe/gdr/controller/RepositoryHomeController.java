@@ -18,31 +18,31 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 @RequestMapping(Relations.REPOSITORY)
 public class RepositoryHomeController {
-private final EntityLinks entityLinks;
-private final LinkService linkService;
-
-@Autowired
-public RepositoryHomeController(EntityLinks entityLinks, LinkService linkService) {
-  this.entityLinks = entityLinks;
-  this.linkService = linkService;
-}
-
-@GetMapping
-public ResourceSupport repositoryHome(@AuthenticationPrincipal User user) {
-  final ResourceSupport links = new ResourceSupport();
-
-  links.add(linkTo(RepositoryHomeController.class).withSelfRel());
-
-  links.add(linkService.paginatedLink(entityLinks.linkFor(Record.class), Relations.RECORDS));
-
-  links.add(linkService.paginatedLink(linkTo(SearchController.class).slash(Relations.RECORDS_SEARCH),
-      Relations.RECORDS_SEARCH));
-
-  if (user != null && user.getAuthorities().contains(Authority.USERS)) {
-    links.add(linkService.paginatedLink(entityLinks.linkFor(User.class), Relations.USERS));
-    links.add(entityLinks.linkFor(Authority.class).withRel(Relations.AUTHORITIES));
-  }
-
-  return links;
-}
+    private final EntityLinks entityLinks;
+    private final LinkService linkService;
+    
+    @Autowired
+    public RepositoryHomeController(EntityLinks entityLinks, LinkService linkService) {
+        this.entityLinks = entityLinks;
+        this.linkService = linkService;
+    }
+    
+    @GetMapping
+    public ResourceSupport repositoryHome(@AuthenticationPrincipal User user) {
+        final ResourceSupport links = new ResourceSupport();
+        
+        links.add(linkTo(RepositoryHomeController.class).withSelfRel());
+        
+        links.add(linkService.paginatedLink(entityLinks.linkFor(Record.class), Relations.RECORDS));
+        
+        links.add(linkService.paginatedLink(linkTo(SearchController.class).slash(Relations.RECORDS_SEARCH),
+                Relations.RECORDS_SEARCH));
+        
+        if (user != null && user.getAuthorities().contains(Authority.USERS)) {
+            links.add(linkService.paginatedLink(entityLinks.linkFor(User.class), Relations.USERS));
+            links.add(entityLinks.linkFor(Authority.class).withRel(Relations.AUTHORITIES));
+        }
+        
+        return links;
+    }
 }
