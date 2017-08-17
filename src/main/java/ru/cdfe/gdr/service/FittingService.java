@@ -117,19 +117,16 @@ public final class FittingService {
                 final double fullWidth = paramArray[paramIndex++];
                 
                 switch (curve.getType()) {
-                    case CurveTypes.GAUSSIAN: {
-                        sum += Curves.gaussian(x, maxCrossSection, energyAtMaxCrossSection,
-                                fullWidth / (2 * Math.sqrt(2 * Math.log(2))));
-                        break;
-                    }
-                    case CurveTypes.LORENTZIAN: {
-                        sum += Curves.lorentzian(x, (Math.PI / 2) * fullWidth * maxCrossSection,
-                                energyAtMaxCrossSection, fullWidth / 2);
-                        break;
-                    }
-                    default: {
-                        throw new FittingException("Unsupported curve type: " + curve.getType());
-                    }
+                case CurveTypes.GAUSSIAN:
+                    sum += Curves.gaussian(x, maxCrossSection, energyAtMaxCrossSection, fullWidth / (2 * Math.sqrt(2 * Math.log(2))));
+                    break;
+                
+                case CurveTypes.LORENTZIAN:
+                    sum += Curves.lorentzian(x, (Math.PI / 2) * fullWidth * maxCrossSection, energyAtMaxCrossSection, fullWidth / 2);
+                    break;
+                
+                default:
+                    throw new FittingException("Unsupported curve type: " + curve.getType());
                 }
             }
             
