@@ -63,9 +63,7 @@ public void run(ApplicationArguments args){
 		defaultUser = userRepository.save(defaultUser);
 		}
 	else
-		{
 		defaultUser = userRepository.insert(defaultUser);
-		}
 
 	log.info("Created default user: {}, with password: {}", defaultUser, securityProperties.getDefaultUserSecret());
 }
