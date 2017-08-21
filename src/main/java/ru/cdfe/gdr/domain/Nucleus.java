@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Nucleus {
-    @JsonProperty(required = true)
-    private int charge;
-    
-    @JsonProperty(required = true)
-    private int mass;
+@JsonProperty(required = true)
+private int charge;
+
+@JsonProperty(required = true)
+private int mass;
 }

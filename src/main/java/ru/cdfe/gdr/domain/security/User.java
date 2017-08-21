@@ -26,27 +26,27 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
 @ToString(exclude = "secret")
 @Relation(collectionRelation = Relations.USERS)
 public class User implements Identifiable<String> {
-    @Id
-    @JsonIgnore
-    private String id;
-    
-    @Version
-    @JsonIgnore
-    private BigInteger version;
-    
-    @NotEmpty
-    @Pattern(regexp = "[a-zA-Z0-9]{1,128}")
-    @Indexed(unique = true)
-    private String name;
-    
-    @JsonProperty(access = WRITE_ONLY)
-    @Pattern(regexp = ".{8,256}")
-    @NotNull(groups = UserCreation.class)
-    private String secret;
-    
-    @NotEmpty
-    private Set<Authority> authorities;
-    
-    @NotEmpty
-    private Set<String> allowedAddresses;
+@Id
+@JsonIgnore
+private String id;
+
+@Version
+@JsonIgnore
+private BigInteger version;
+
+@NotEmpty
+@Pattern(regexp = "[a-zA-Z0-9]{1,128}")
+@Indexed(unique = true)
+private String name;
+
+@JsonProperty(access = WRITE_ONLY)
+@Pattern(regexp = ".{8,256}")
+@NotNull(groups = UserCreation.class)
+private String secret;
+
+@NotEmpty
+private Set<Authority> authorities;
+
+@NotEmpty
+private Set<String> allowedAddresses;
 }

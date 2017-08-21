@@ -23,29 +23,29 @@ import ru.cdfe.gdr.service.SearchService;
 @RestController
 @RequestMapping(Relations.REPOSITORY)
 public class SearchController {
-    private final SearchService searchService;
-    private final EntityLinks entityLinks;
-    
-    @Autowired
-    public SearchController(SearchService searchService, EntityLinks entityLinks) {
-        this.searchService = searchService;
-        this.entityLinks = entityLinks;
-    }
-    
-    @PostMapping(Relations.RECORDS_SEARCH)
-    @PreAuthorize("permitAll()")
-    public PagedResources<Resource<Record>> searchRecords(@RequestBody @Validated SearchQuery query,
-                                                          Pageable pageable,
-                                                          PagedResourcesAssembler<Record> assembler) {
-        return assembler.toResource(search(Record.class, query, pageable),
-                entity -> new Resource<>(entity, entityLinks.linkToSingleResource(entity).withRel(Relations.RECORD)));
-    }
-    
-    private <T> Page<T> search(Class<T> domainObjectType, SearchQuery query, Pageable pageable) {
-        log.debug("Type: {}, Query: {}, Pageable: {}", domainObjectType, query, pageable);
-        final Page<T> result = searchService.find(query, pageable, domainObjectType);
-        log.debug("Found: {}", result);
-        log.trace("Page content: {}", result.getContent());
-        return result;
-    }
+private final SearchService searchService;
+private final EntityLinks entityLinks;
+
+@Autowired
+public SearchController(SearchService searchService, EntityLinks entityLinks){
+	this.searchService = searchService;
+	this.entityLinks = entityLinks;
+}
+
+@PostMapping(Relations.RECORDS_SEARCH)
+@PreAuthorize("permitAll()")
+public PagedResources<Resource<Record>> searchRecords(@RequestBody @Validated SearchQuery query,
+                                                      Pageable pageable,
+                                                      PagedResourcesAssembler<Record> assembler){
+	return assembler.toResource(search(Record.class, query, pageable),
+			entity -> new Resource<>(entity, entityLinks.linkToSingleResource(entity).withRel(Relations.RECORD)));
+}
+
+private <T> Page<T> search(Class<T> domainObjectType, SearchQuery query, Pageable pageable){
+	log.debug("Type: {}, Query: {}, Pageable: {}", domainObjectType, query, pageable);
+	final Page<T> result = searchService.find(query, pageable, domainObjectType);
+	log.debug("Found: {}", result);
+	log.trace("Page content: {}", result.getContent());
+	return result;
+}
 }

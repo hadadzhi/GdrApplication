@@ -16,25 +16,25 @@ import java.time.temporal.ChronoUnit;
 @ConfigurationProperties("gdr.security")
 @Validated
 public class GdrSecurityProperties {
-    /**
-     * Maximum amount of time (in minutes) without user activity
-     * before the authentication token is invalidated.
-     */
-    private Duration tokenExpiry = Security.AUTH_SESSION_LENGTH;
-    
-    public void setTokenExpiry(long minutes) {
-        Assert.isTrue(minutes > 0, "Value must be a positive number"); // Can't use validation on the method parameter
-        tokenExpiry = Duration.of(minutes, ChronoUnit.MINUTES);
-    }
-    
-    /**
-     * Length of the authentication token in bytes.
-     */
-    @Min(4)
-    private int tokenLength = Security.AUTH_TOKEN_LENGTH_BYTES;
-    
-    private String defaultUserName = Security.DEFAULT_USER_NAME;
-    private String defaultUserSecret = Security.DEFAULT_USER_SECRET;
-    
-    private boolean persistentAuthentication = false;
+/**
+ * Maximum amount of time (in minutes) without user activity
+ * before the authentication token is invalidated.
+ */
+private Duration tokenExpiry = Security.AUTH_SESSION_LENGTH;
+
+public void setTokenExpiry(long minutes){
+	Assert.isTrue(minutes > 0, "Value must be a positive number"); // Can't use validation on the method parameter
+	tokenExpiry = Duration.of(minutes, ChronoUnit.MINUTES);
+}
+
+/**
+ * Length of the authentication token in bytes.
+ */
+@Min(4)
+private int tokenLength = Security.AUTH_TOKEN_LENGTH_BYTES;
+
+private String defaultUserName = Security.DEFAULT_USER_NAME;
+private String defaultUserSecret = Security.DEFAULT_USER_SECRET;
+
+private boolean persistentAuthentication = false;
 }

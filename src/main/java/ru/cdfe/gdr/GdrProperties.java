@@ -14,16 +14,16 @@ import javax.validation.constraints.Pattern;
 @ConfigurationProperties("gdr")
 @Validated
 public class GdrProperties {
-    @NotBlank
-    @Pattern(regexp = "[a-z-]{3,8}")
-    private String curieName;
-    
-    @NotBlank
-    private String curieUriTemplate;
-    
-    @Min(1)
-    private int maxPageSize;
-    
-    @Min(1)
-    private int defaultPageSize;
+@NotBlank
+@Pattern(regexp = "[a-z-]{3,8}")
+private String curieName;
+
+@NotBlank
+private String curieUriTemplate;
+
+@Min(1)
+private int maxPageSize;
+
+@Min(1)
+private int defaultPageSize;
 }

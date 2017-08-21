@@ -16,9 +16,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Pattern(regexp = "[A-Z0-9]{8}")
 @Constraint(validatedBy = {})
 public @interface ExforSubent {
-    String message() default "must be an exfor subent number";
-    
-    Class<?>[] groups() default {};
-    
-    Class<? extends Payload>[] payload() default {};
+String message() default "must be an exfor subent number";
+
+Class<?>[] groups() default {};
+
+Class<? extends Payload>[] payload() default {};
 }
