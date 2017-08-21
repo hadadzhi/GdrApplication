@@ -22,22 +22,25 @@ public Map<String, Object> getErrorAttributes(RequestAttributes requestAttribute
 		errorAttributes.put("message", ex.getMessage());
 		}
 
-	errorAttributes.compute("code", (k, v) ->
-	{
-	if (ex instanceof GdrException)
-		{
-		return GdrException.class.cast(ex).getErrorCode();
-		}
-	else if (ex instanceof MethodArgumentNotValidException)
-		{
-		return ErrorCodes.VALIDATION_FAILURE;
-		}
-	else if (ex instanceof AccessDeniedException)
-		{
-		return ErrorCodes.BAD_CREDENTIALS;
-		}
-	return null;
-	});
+	errorAttributes.compute(
+			"code",
+			(k, v) ->
+			{
+			if (ex instanceof GdrException)
+				{
+				return GdrException.class.cast(ex).getErrorCode();
+				}
+			else if (ex instanceof MethodArgumentNotValidException)
+				{
+				return ErrorCodes.VALIDATION_FAILURE;
+				}
+			else if (ex instanceof AccessDeniedException)
+				{
+				return ErrorCodes.BAD_CREDENTIALS;
+				}
+			return null;
+			}
+	);
 
 	return errorAttributes;
 }

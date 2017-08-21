@@ -25,6 +25,7 @@ import static java.util.stream.Collectors.toSet;
 @Slf4j
 @Component
 class DefaultUserCreator implements ApplicationRunner {
+
 private final UserRepository userRepository;
 private final GdrSecurityProperties securityProperties;
 private final PasswordEncoder passwordEncoder;
@@ -40,33 +41,33 @@ public DefaultUserCreator(UserRepository userRepository,
 }
 
 @Override
-public void run(ApplicationArguments args) throws Exception{
-	if (userRepository.count() == 0 || args.containsOption(CommandLineOptions.CREATE_DEFAULT_USER))
+public void run(ApplicationArguments args){
+	if (userRepository.count() != 0 && !args.containsOption(CommandLineOptions.CREATE_DEFAULT_USER))
+		return;
+
+	User defaultUser = new User();
+
+	defaultUser.setName(securityProperties.getDefaultUserName());
+	defaultUser.setSecret(passwordEncoder.encode(securityProperties.getDefaultUserSecret()));
+	defaultUser.setAuthorities(Arrays.stream(Authority.values()).collect(toSet()));
+	defaultUser.setAllowedAddresses(Stream.of("::1", "127.0.0.1").collect(toSet()));
+
+	final User existingUser = userRepository.findByName(defaultUser.getName());
+	if (existingUser != null)
 		{
-		User defaultUser = new User();
+		log.warn("Default user already exists, overwriting");
 
-		defaultUser.setName(securityProperties.getDefaultUserName());
-		defaultUser.setSecret(passwordEncoder.encode(securityProperties.getDefaultUserSecret()));
-		defaultUser.setAuthorities(Arrays.stream(Authority.values()).collect(toSet()));
-		defaultUser.setAllowedAddresses(Stream.of("::1", "127.0.0.1").collect(toSet()));
+		defaultUser.setId(existingUser.getId());
+		defaultUser.setVersion(existingUser.getVersion());
 
-		final User existingUser = userRepository.findByName(defaultUser.getName());
-		if (existingUser != null)
-			{
-			log.warn("Default user already exists, overwriting");
-
-			defaultUser.setId(existingUser.getId());
-			defaultUser.setVersion(existingUser.getVersion());
-
-			defaultUser = userRepository.save(defaultUser);
-			}
-		else
-			{
-			defaultUser = userRepository.insert(defaultUser);
-			}
-
-		log.info("Created default user: {}, with password: {}",
-				defaultUser, securityProperties.getDefaultUserSecret());
+		defaultUser = userRepository.save(defaultUser);
 		}
+	else
+		{
+		defaultUser = userRepository.insert(defaultUser);
+		}
+
+	log.info("Created default user: {}, with password: {}", defaultUser, securityProperties.getDefaultUserSecret());
 }
+
 }
